@@ -41,17 +41,10 @@ A continuación, siguiendo las principales etapas de un proyecto analítico, las
 
 ```{r, include=FALSE, results='hold'}
 #cargamos el fichero de datos World Happiness Report limpio, vemos que los separadores son comas y que tiene cabecera
-# cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data.csv", head=TRUE, sep = ",")
 
-# tomamos los valores a partir de 2006
-# cmm_trade_data <- cmm_trade_data[which(cmm_trade_data$year>=2006),]
 
 # lectura del fichero con datos a partir de 2006
 cmm_trade_data = read.csv("C:\Users\Ruben\Google Drive\UOC\2_Tipología y Ciclo de Vida de los Datos\Prácticas\Práctica2\commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
-# cmm_trade_data = read.csv("C:/Users/Ricky/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
-#write.csv(cmm_trade_data_red, file = "C:/Users/rpc/Documents/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data_2006.csv", row.names=FALSE, sep=",")
 
 #mostramos las primeras filas del fichero
 #head(cmm_trade_data,10)
