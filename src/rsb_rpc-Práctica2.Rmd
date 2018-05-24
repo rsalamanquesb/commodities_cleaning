@@ -44,10 +44,10 @@ A continuación, siguiendo las principales etapas de un proyecto analítico, las
 
 
 # lectura del fichero con datos a partir de 2006
-cmm_trade_data = read.csv("C:\Users\Ruben\Google Drive\UOC\2_Tipología y Ciclo de Vida de los Datos\Prácticas\Práctica2\commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
 #mostramos las primeras filas del fichero
-#head(cmm_trade_data,10)
+head(cmm_trade_data,10)
 ```
 
 - - -
