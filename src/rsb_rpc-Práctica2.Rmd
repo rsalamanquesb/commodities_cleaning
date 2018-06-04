@@ -13,12 +13,16 @@ output:
 ---
 - - -
 
+<style>
+body {text-align: justify}
+</style>
+
 ```{r setup, include=FALSE}
 library('knitr')
 library('kableExtra')
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
+
 ##Introducción
 
 El objetivo de esta actividad será el tratamiento de un dataset, que puede ser el creado en la práctica 1 o bien cualquier dataset libre disponible en Kaggle (https://www.kaggle.com). Algunos ejemplos de dataset con los que podéis trabajar son:
@@ -72,7 +76,7 @@ Las columnas del dataset son las siguientes:
 
 Como el archivo original es muy grande, se ha preparado una versión que contiene únicamente los datos a partir del año 2006. Con el siguiente código se carga dicho archivo.
 
-```{r, include=FALSE, results='hold'}
+```{r, results='hold'}
 
 # lectura del fichero con datos a partir de 2006
 #cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
@@ -95,9 +99,14 @@ Además, se va a trabajar únicamente con los países del G-20 (incluyendo a Esp
 
 El siguiente código en R proporciona un subconjunto de los datos cargados que cumple los requisitos expuestos.
 
-```{r, include=FALSE, results='hold'}
-
-cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+```{r, results='hold'}
+G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canada|China|France|Germany|India|Indonesia|Italy|Japan|Mexico|Russia|Saudi Arabia|South Africa|Spain|Rep. of Korea|Turkey|United Kingdom|USA", cmm_trade_data$country_or_area),
+                    c("country_or_area",
+                      "year",
+                      "comm_code",
+                      "flow",
+                      "trade_usd",
+                      "category")])
 
 ```
 
@@ -164,6 +173,50 @@ blah blah
 
 
 ###3.2.- Identificación y tratamiento de valores extremos.
+
+Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es *trade_usd*.
+
+Como se acaba de ver en el punto anterior, el conjunto de datos cuenta con filas sumatorio (comm_code= TOTAL o 999999). Estas filas no son válidas para realizar los análisis propuestos con lo que se procede a limpiar el conjunto de datos eliminándolas.
+
+```{r, include=TRUE, results='hold'}
+
+G_20_data <- G_20_data[G_20_data$comm_code != "999999" &
+                       G_20_data$comm_code != "TOTAL",]
+
+```
+
+Una manera de visualizar los valores extremos es mediante un diagrama de caja o *boxplot*. Con el siguiente código se obtiene este diagrama.
+
+```{r, include=TRUE, results='hold'}
+
+par(mar=c(7,4,7,4)) #Márgenes del gráfico
+
+boxplot(G_20_data$trade_usd, 
+       main="Dispersión de trade_usd",
+       xlab="Dólares estadounidenses",
+       col="skyblue", #color de relleno
+       boxcol="skyblue", #color de la caja
+       outcol="salmon", #color de los valores extremos
+       horizontal=TRUE)
+
+```
+
+Se puede observar que el gráfico obtenido no es legible. Esto se debe a que el campo analizado tiene un rango de valores muy grande. En el conjunto de datos se registran transacciones de varios cientos de miles de millones de dólares así como otras de tan solo decenas.
+
+En realidad, cualquiera de estos valores es un valor válido con lo que no se considera ningún registro como valor extremo.
+
+Por último se muestra la distribución de valores de *trade_usd* para apreciar la cantidad de datos que exiten a lo largo de todo el rango de la variable.
+
+```{r, include=TRUE, results='hold'}
+
+#cat("Valores atípicos para trade_usd:", boxplot.stats(G_20_data[,"trade_usd"])$out)
+plot(G_20_data$trade_usd, 
+     xlab="Valores de trade_usd",
+     ylab="Fila",
+     col="skyblue"
+     )
+
+```
 
 - - -
 
