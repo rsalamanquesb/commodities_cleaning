@@ -5,7 +5,7 @@ date: "10 de junio de 2018"
 output:
   html_document:
     toc: true
-    theme: united
+    #theme: united
     df_print: paged
     
 #csl: apa.csl
@@ -14,8 +14,7 @@ output:
 - - -
 
 <style>
-body {
-text-align: justify}
+body {text-align: justify}
 </style>
 
 ```{r setup, include=FALSE}
@@ -23,8 +22,8 @@ library('knitr')
 library('kableExtra')
 library('stringr')
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
+
 ##Introducción
 
 El objetivo de esta actividad será el tratamiento de un dataset, que puede ser el creado en la práctica 1 o bien cualquier dataset libre disponible en Kaggle (https://www.kaggle.com). Algunos ejemplos de dataset con los que podéis trabajar son:
@@ -78,12 +77,12 @@ Las columnas del dataset son las siguientes:
 
 Como el archivo original es muy grande, se ha preparado una versión que contiene únicamente los datos a partir del año 2006. Con el siguiente código se carga dicho archivo.
 
-```{r, include=FALSE, results='hold'}
+```{r, results='hold'}
 
 # lectura del fichero con datos a partir de 2006
 #cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
-cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
 ```
 
@@ -101,9 +100,14 @@ Además, se va a trabajar únicamente con los países del G-20 (incluyendo a Esp
 
 El siguiente código en R proporciona un subconjunto de los datos cargados que cumple los requisitos expuestos.
 
-```{r, include=FALSE, results='hold'}
-
-# cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+```{r, results='hold'}
+G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canada|China|France|Germany|India|Indonesia|Italy|Japan|Mexico|Russia|Saudi Arabia|South Africa|Spain|Rep. of Korea|Turkey|United Kingdom|USA", cmm_trade_data$country_or_area),
+                    c("country_or_area",
+                      "year",
+                      "comm_code",
+                      "flow",
+                      "trade_usd",
+                      "category")])
 
 ```
 
@@ -146,7 +150,6 @@ summary(cmm_trade_data)
 ```
 
 
-
 ###3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
 
 Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las siguientes:
@@ -165,12 +168,6 @@ Por tanto, analizaremos la existencia de ceros o elementos vacíos en estas colu
 
 aux_data <- cmm_trade_data[c("country_or_area", "year", "comm_code", "flow", "trade_usd", "category")]
 summary(aux_data)
-
-```
-
-
-```{r, include=TRUE, echo=FALSE, results='hold'}
-# aux <- fumadores[ which(fumadores$Tipo!='FI' & fumadores$Tipo!='FM' & fumadores$Tipo!='FP' & fumadores$Tipo!='NF' & fumadores$Tipo!='FL' & fumadores$Tipo!='NI'), ]
 
 ```
 
@@ -310,38 +307,49 @@ En cuanto a la variable "category", vemos que se trata de una cadena que concate
 
 ###3.2.- Identificación y tratamiento de valores extremos.
 
-A continuación, mostramos diagramas de caja para los valores de cada una de las columnas del archivo:
+Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es *trade_usd*.
 
-```{r, include=TRUE, echo=FALSE, results='hold'}
-##Gr?ficos
-# boxplot(whr_data[, c("HS", "LCI", "UCI")], col="grey", xlab='', ylab='', horizontal=TRUE)
-# boxplot(whr_data[, c("GpC", "Family", "LE", "DR")], col="grey", xlab='', ylab='', horizontal=TRUE)
-# boxplot(whr_data[, c("Freedom", "GC", "Generosity")], col="grey", xlab='', ylab='', horizontal=TRUE)
-```
+Como se acaba de ver en el punto anterior, el conjunto de datos cuenta con filas sumatorio (comm_code= TOTAL o 999999). Estas filas no son válidas para realizar los análisis propuestos con lo que se procede a limpiar el conjunto de datos eliminándolas.
 
-El boxplot nos sirve para esto
+```{r, include=TRUE, results='hold'}
 
-```{r, include=TRUE, echo=FALSE, results='hold'}
-
-# # gráfico de cajas
-# #boxplot(cmm_trade_data[, c("weight_kg", "quantity")], col="grey", xlab='', ylab='', horizontal=TRUE)
-# 
-# boxplot(cmm_trade_data[, c("weight_kg")], col="grey", xlab='', ylab='')
-# boxplot.stats(cmm_trade_data$weight_kg)$out
-# 
-# boxplot(cmm_trade_data[, c("quantity")], col="grey", xlab='', ylab='')
-# boxplot.stats(cmm_trade_data$quantity)$out
-# 
-# 
-# outlier_values <- boxplot.stats(cmm_trade_data$weight_kg)$out  # outlier values.
-# 
-# boxplot(cmm_trade_data$weight_kg, main="Weight Kg", boxwex=0.1)
-# 
-# mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
-
+G_20_data <- G_20_data[G_20_data$comm_code != "999999" &
+                       G_20_data$comm_code != "TOTAL",]
 
 ```
 
+Una manera de visualizar los valores extremos es mediante un diagrama de caja o *boxplot*. Con el siguiente código se obtiene este diagrama.
+
+```{r, include=TRUE, results='hold'}
+
+par(mar=c(7,4,7,4)) #Márgenes del gráfico
+
+boxplot(G_20_data$trade_usd, 
+       main="Dispersión de trade_usd",
+       xlab="Dólares estadounidenses",
+       col="skyblue", #color de relleno
+       boxcol="skyblue", #color de la caja
+       outcol="salmon", #color de los valores extremos
+       horizontal=TRUE)
+
+```
+
+Se puede observar que el gráfico obtenido no es legible. Esto se debe a que el campo analizado tiene un rango de valores muy grande. En el conjunto de datos se registran transacciones de varios cientos de miles de millones de dólares así como otras de tan solo decenas.
+
+En realidad, cualquiera de estos valores es un valor válido con lo que no se considera ningún registro como valor extremo.
+
+Por último se muestra la distribución de valores de *trade_usd* para apreciar la cantidad de datos que exiten a lo largo de todo el rango de la variable.
+
+```{r, include=TRUE, results='hold'}
+
+#cat("Valores atípicos para trade_usd:", boxplot.stats(G_20_data[,"trade_usd"])$out)
+plot(G_20_data$trade_usd, 
+     xlab="Valores de trade_usd",
+     ylab="Fila",
+     col="skyblue"
+     )
+
+```
 
 - - -
 
