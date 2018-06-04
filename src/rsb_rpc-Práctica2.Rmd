@@ -5,7 +5,7 @@ date: "10 de junio de 2018"
 output:
   html_document:
     toc: true
-    theme: united
+    #theme: united
     df_print: paged
     
 #csl: apa.csl
@@ -13,14 +13,16 @@ output:
 ---
 - - -
 
+<style>
+body {text-align: justify}
+</style>
+
 ```{r setup, include=FALSE}
 library('knitr')
 library('kableExtra')
-#knitr::opts_chunk$set(echo = TRUE)
-
-#Opciones
-#options(digits = 3)
+knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ##Introducción
 
 El objetivo de esta actividad será el tratamiento de un dataset, que puede ser el creado en la práctica 1 o bien cualquier dataset libre disponible en Kaggle (https://www.kaggle.com). Algunos ejemplos de dataset con los que podéis trabajar son:
@@ -39,38 +41,81 @@ A continuación, siguiendo las principales etapas de un proyecto analítico, las
 
 - - -
 
-```{r, include=FALSE, results='hold'}
-#cargamos el fichero de datos World Happiness Report limpio, vemos que los separadores son comas y que tiene cabecera
-# cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data.csv", head=TRUE, sep = ",")
-
-# tomamos los valores a partir de 2006
-# cmm_trade_data <- cmm_trade_data[which(cmm_trade_data$year>=2006),]
-
-# lectura del fichero con datos a partir de 2006
-cmm_trade_data = read.csv("C:\Users\Ruben\Google Drive\UOC\2_Tipología y Ciclo de Vida de los Datos\Prácticas\Práctica2\commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
-# cmm_trade_data = read.csv("C:/Users/Ricky/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
-#write.csv(cmm_trade_data_red, file = "C:/Users/rpc/Documents/Google Drive/M?ster Data Science/2017-2018 2ndo semestre/Tipolog?a y ciclo de vida de los datos/Pr?ctica 2 - Limpieza y validaci?n de datos/commodity_trade_statistics_data_2006.csv", row.names=FALSE, sep=",")
-
-#mostramos las primeras filas del fichero
-#head(cmm_trade_data,10)
-```
-
-- - -
-
 ##1.- Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende responder?
 
 Se trata de un dataset originalmente publicado por "United Nations Statistics Division" en la página de UNData (http://data.un.org/Explorer.aspx). Los términos de uso dicen que todos los datos y metadatos provenientes de la página de UNData pueden ser utilizados sin coste y pueden ser copiados libremente y distribuidos posteriormente siempre y cuando se cite a UNdata como fuente original.
 
-El dataset contiene información sobre flujos de exportación e importación de animales y productos de consumo de países del mundo.
+El dataset contiene información sobre flujos de exportación e importación de animales y productos de consumo de países del mundo durante un periodo de 30 años.
+
+Debido al gran volumen que esto supone se va a trabajar con un subconjunto que comprende el periodo entre los años 2006 y 2016.
+
+A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países en un periodo en el que se ha producido una de las mayores crisis a nivel mundial del último siglo.
+
+  * ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
+
+  * ¿Cuál será la previsión de exportación de la categoría más exportada por España?
+
+  * ¿El mercado chino ha resistido mejor la crisis en comparación con el estadounidense?
+
+Las columnas del dataset son las siguientes:
+
+  * **country_or_area:** País o zona geográfica.
+  * **year:** Año de la transacción.
+  * **comm_code:** Código de la mercancía.
+  * **commodity:** Descripción de la mercancía.
+  * **flow:** Flujo de la transacción (importación/exportación/re-importación/re-exportación).
+  * **trade_usd:** Precio de la transacción (en dólares estadounidenses).
+  * **weight_kg:** Peso en kilogramos.
+  * **quantity_name:** Magnitud de la cantidad.
+  * **quantity:** Cantidad
+  * **category:** Categoría genérica de la transacción
+
+- - -
+
+##2.- Integración y selección de los datos de interés a analizar.
+
+Como el archivo original es muy grande, se ha preparado una versión que contiene únicamente los datos a partir del año 2006. Con el siguiente código se carga dicho archivo.
+
+```{r, results='hold'}
+
+# lectura del fichero con datos a partir de 2006
+#cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+
+cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+
+```
+
+Con esto se obtiene un conjunto de datos con las características explicadas anteriormente. Sin embargo, para responder a las cuestiones planteadas, tan solo es necesario trabajar con las siguientes columnas.
 
 
-A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países........................blah blah blah 
+  * **country_or_area:** Para hacer análisis por países.
+  * **year:** Para estudiar la evolución temporal.
+  * **comm_code:** Para corregir datos ausentes en otros campos.
+  * **flow:** Para estudiar solo ciertos flujos.
+  * **trade_usd:** Para analizar los volúmenes de las transacciones.
+  * **category:** Para agrupar por categorías.
+  
+Además, se va a trabajar únicamente con los países del G-20 (incluyendo a España en lugar de la UE en el último puesto).
 
+El siguiente código en R proporciona un subconjunto de los datos cargados que cumple los requisitos expuestos.
+
+```{r, results='hold'}
+G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canada|China|France|Germany|India|Indonesia|Italy|Japan|Mexico|Russia|Saudi Arabia|South Africa|Spain|Rep. of Korea|Turkey|United Kingdom|USA", cmm_trade_data$country_or_area),
+                    c("country_or_area",
+                      "year",
+                      "comm_code",
+                      "flow",
+                      "trade_usd",
+                      "category")])
+
+```
+
+- - -
+
+##3.- Limpieza de los datos
 
 Obtenemos un resumen de los datos para llevar a cabo un análisis previo:
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 #resumen de los datos
 summary(cmm_trade_data)
 ```
@@ -92,45 +137,32 @@ A continuación, mostramos diagramas de caja para los valores de cada una de las
 
 blah blah
 
-- - -
-
-##2.- Integración y selección de los datos de interés a analizar.
-
-blah blah
-
-- - -
-
-##3.- Limpieza de los datos
-
-Tal y como hemos visto en el punto 1, los datos necesitan una limpieza previa para poder llevar a cabo los análisis.....
-
-
 
 ```{r, include=TRUE, echo=FALSE, results='hold'}
-## Creamos un dataframe con la informaci?n sobre c?digo de categor?a - descripci?n
+## Creamos un dataframe con la información sobre código de categoría - descripción
 
-categories = cmm_trade_data[c("category")]
-categories = subset(categories, category != "all_commodities" | category == "NA")
-categories = categories[!duplicated(categories$category), ]
-categories = data.frame(categories)
-categories = data.frame("category"=categories)
-colnames(categories)[which(names(categories) == "categories")] <- "category"
+# categories = cmm_trade_data[c("category")]
+# categories = subset(categories, category != "all_commodities" | category == "NA")
+# categories = categories[!duplicated(categories$category), ]
+# categories = data.frame(categories)
+# categories = data.frame("category"=categories)
+# colnames(categories)[which(names(categories) == "categories")] <- "category"
 
-# de esta forma crear?amos una tabla con frecuencias
+# de esta forma crearíamos una tabla con frecuencias
 # categories <- as.data.frame(ftable(categories$category))
 
-# separamos el c?digo de la descripci?n
-categories$category_number <- substring(categories$category, 1, 2)
-categories$category_desc <- substring(categories$category, 4)
-# almacenamos el c?digo como num?rico
-categories$category_number <- as.numeric(unlist(categories$category_number))
+# separamos el código de la descripción
+# categories$category_number <- substring(categories$category, 1, 2)
+# categories$category_desc <- substring(categories$category, 4)
+# almacenamos el código como numérico
+# categories$category_number <- as.numeric(unlist(categories$category_number))
 
 ## Actualizamos los valores de "category" del dataset de origen
 # para las filas con category=all_commodities, dejamos un NA
-cmm_trade_data[which(cmm_trade_data$category=='all_commodities'),]$category <- "NA"
+# cmm_trade_data[which(cmm_trade_data$category=='all_commodities'),]$category <- "NA"
 # sustituimos el valor por la clave num?rica
-cmm_trade_data$category = substring(cmm_trade_data$category, 1, 2)
-cmm_trade_data$category <- as.numeric(unlist(cmm_trade_data$category))
+# cmm_trade_data$category = substring(cmm_trade_data$category, 1, 2)
+# cmm_trade_data$category <- as.numeric(unlist(cmm_trade_data$category))
 
 ```
 
@@ -141,6 +173,50 @@ cmm_trade_data$category <- as.numeric(unlist(cmm_trade_data$category))
 
 
 ###3.2.- Identificación y tratamiento de valores extremos.
+
+Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es *trade_usd*.
+
+Como se acaba de ver en el punto anterior, el conjunto de datos cuenta con filas sumatorio (comm_code= TOTAL o 999999). Estas filas no son válidas para realizar los análisis propuestos con lo que se procede a limpiar el conjunto de datos eliminándolas.
+
+```{r, include=TRUE, results='hold'}
+
+G_20_data <- G_20_data[G_20_data$comm_code != "999999" &
+                       G_20_data$comm_code != "TOTAL",]
+
+```
+
+Una manera de visualizar los valores extremos es mediante un diagrama de caja o *boxplot*. Con el siguiente código se obtiene este diagrama.
+
+```{r, include=TRUE, results='hold'}
+
+par(mar=c(7,4,7,4)) #Márgenes del gráfico
+
+boxplot(G_20_data$trade_usd, 
+       main="Dispersión de trade_usd",
+       xlab="Dólares estadounidenses",
+       col="skyblue", #color de relleno
+       boxcol="skyblue", #color de la caja
+       outcol="salmon", #color de los valores extremos
+       horizontal=TRUE)
+
+```
+
+Se puede observar que el gráfico obtenido no es legible. Esto se debe a que el campo analizado tiene un rango de valores muy grande. En el conjunto de datos se registran transacciones de varios cientos de miles de millones de dólares así como otras de tan solo decenas.
+
+En realidad, cualquiera de estos valores es un valor válido con lo que no se considera ningún registro como valor extremo.
+
+Por último se muestra la distribución de valores de *trade_usd* para apreciar la cantidad de datos que exiten a lo largo de todo el rango de la variable.
+
+```{r, include=TRUE, results='hold'}
+
+#cat("Valores atípicos para trade_usd:", boxplot.stats(G_20_data[,"trade_usd"])$out)
+plot(G_20_data$trade_usd, 
+     xlab="Valores de trade_usd",
+     ylab="Fila",
+     col="skyblue"
+     )
+
+```
 
 - - -
 
