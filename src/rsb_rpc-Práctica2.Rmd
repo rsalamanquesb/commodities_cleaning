@@ -20,6 +20,8 @@ body {text-align: justify}
 ```{r setup, include=FALSE}
 library('knitr')
 library('kableExtra')
+library('stringr')
+
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -81,7 +83,9 @@ Como el archivo original es muy grande, se ha preparado una versión que contien
 # lectura del fichero con datos a partir de 2006
 #cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
-cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+# cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+
+cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
 ```
 
@@ -107,7 +111,6 @@ G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canad
                       "flow",
                       "trade_usd",
                       "category")])
-
 ```
 
 - - -
@@ -117,59 +120,153 @@ G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canad
 Obtenemos un resumen de los datos para llevar a cabo un análisis previo:
 ```{r, include=TRUE, echo=TRUE, results='hold'}
 #resumen de los datos
-summary(cmm_trade_data)
+summary(G_20_data)
 ```
-
-Llevamos a cabo un análisis "manual" de la información. Vemos que para el campo "comm_code" tenemos dos valores especiales: "999999", que significa "Commodities not specified according to kind" y "TOTAL", que representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).
-
-En cuanto a la variable "category", vemos que se trata de una cadena que concatena dos dígitos y un texto; para su tratamiento, separaremos los dos dígitos del resto. Hemos visto un valor especial, se trata de "all_commodities", se trata del valor que se carga para "comm_code=TOTAL", por tanto, para estas observaciones cargaremos un NA.
-
-
-
-A continuación, mostramos diagramas de caja para los valores de cada una de las columnas del archivo:
-```{r, include=TRUE, echo=FALSE, results='hold'}
-##Gr?ficos
-# boxplot(whr_data[, c("HS", "LCI", "UCI")], col="grey", xlab='', ylab='', horizontal=TRUE)
-# boxplot(whr_data[, c("GpC", "Family", "LE", "DR")], col="grey", xlab='', ylab='', horizontal=TRUE)
-# boxplot(whr_data[, c("Freedom", "GC", "Generosity")], col="grey", xlab='', ylab='', horizontal=TRUE)
-```
-
-
-blah blah
-
-
-```{r, include=TRUE, echo=FALSE, results='hold'}
-## Creamos un dataframe con la información sobre código de categoría - descripción
-
-# categories = cmm_trade_data[c("category")]
-# categories = subset(categories, category != "all_commodities" | category == "NA")
-# categories = categories[!duplicated(categories$category), ]
-# categories = data.frame(categories)
-# categories = data.frame("category"=categories)
-# colnames(categories)[which(names(categories) == "categories")] <- "category"
-
-# de esta forma crearíamos una tabla con frecuencias
-# categories <- as.data.frame(ftable(categories$category))
-
-# separamos el código de la descripción
-# categories$category_number <- substring(categories$category, 1, 2)
-# categories$category_desc <- substring(categories$category, 4)
-# almacenamos el código como numérico
-# categories$category_number <- as.numeric(unlist(categories$category_number))
-
-## Actualizamos los valores de "category" del dataset de origen
-# para las filas con category=all_commodities, dejamos un NA
-# cmm_trade_data[which(cmm_trade_data$category=='all_commodities'),]$category <- "NA"
-# sustituimos el valor por la clave num?rica
-# cmm_trade_data$category = substring(cmm_trade_data$category, 1, 2)
-# cmm_trade_data$category <- as.numeric(unlist(cmm_trade_data$category))
-
-```
-
-
 
 ###3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
 
+Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las siguientes:
+  
+  * **country_or_area:** Para hacer análisis por países.
+  * **year:** Para estudiar la evolución temporal.
+  * **comm_code:** Para corregir datos ausentes en otros campos.
+  * **flow:** Para estudiar solo ciertos flujos.
+  * **trade_usd:** Para analizar los volúmenes de las transacciones.
+  * **category:** Para agrupar por categorías.
+
+Por tanto, analizaremos la existencia de ceros o elementos vacíos en estas columnas.
+
+Comenzaremos el análisis detallado por las variables más sencillas:
+
+ + En primer lugar **year**:
+ 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna year
+aux = G_20_data[c("year")]
+aux = aux[!duplicated(aux$year), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$year=='0' | G_20_data$year=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+print(sort(aux,decreasing=FALSE))
+```
+
++ A continuación, **flow**, en este caso ya hemos visto en el resumen que todos los valores son de los cuatro tipos esperados:
+
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna flow
+aux = G_20_data[c("flow")]
+aux = aux[!duplicated(aux$flow), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$flow=='0' | G_20_data$flow=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+print(sort(aux,decreasing=FALSE))
+```
+
+
+ + La siguiente variable a analizar es **country_or_area**:
+ 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna country_or_area
+aux = G_20_data[c("country_or_area")]
+aux = aux[!duplicated(aux$country_or_area), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$country_or_area=='0' | G_20_data$country_or_area=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+print(sort(aux,decreasing=FALSE))
+```
+
+ + La siguiente variable a analizar es **comm_code**:
+ 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna comm_code
+aux = G_20_data[c("comm_code")]
+aux = aux[!duplicated(aux$comm_code), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$comm_code=='0' | G_20_data$comm_code=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+summary(G_20_data$comm_code)
+```
+
+    - Para el caso de "comm_code", vemos que existen dos valores aparentemente anómalos o especiales, los trataremos en el punto 3.2, son los siguientes valores:
+
+      - "999999": que significa "Commodities not specified according to kind"
+  
+      - "TOTAL": representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).
+
+
+ + La siguiente variable a analizar es **trade_usd**:
+ 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna trade_usd
+aux = G_20_data[c("trade_usd")]
+aux = aux[!duplicated(aux$trade_usd), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$trade_usd=='0' | G_20_data$trade_usd=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+summary(G_20_data$trade_usd)
+```
+
+ + La siguiente variable a analizar es **category**:
+ 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+## Analizamos la columna category
+aux = G_20_data[c("category")]
+aux = aux[!duplicated(aux$category), ]
+
+aux_n0 <- G_20_data[ which(G_20_data$category=='0' | G_20_data$category=='NA'), ]
+
+if (nrow(aux_n0) == 0){
+  print("No existen nulos ni ceros")
+}else{
+  print("Sí existen nulos ni ceros")
+}
+
+print("-------------------------------------------------------")
+print("Los valores que contiene la columna son los siguientes:")
+print(sort(aux,decreasing=FALSE))
+```
+
+En cuanto a la variable "category", vemos que se trata de una cadena que concatena dos dígitos y un texto. Hemos visto un valor especial, se trata de "all_commodities", se trata del valor que se carga para "comm_code=TOTAL", por tanto, trataremos estas observciones de forma especial.
 
 
 ###3.2.- Identificación y tratamiento de valores extremos.
