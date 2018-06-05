@@ -21,6 +21,7 @@ body {text-align: justify}
 library('knitr')
 library('kableExtra')
 library('stringr')
+
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -108,7 +109,6 @@ G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canad
                       "flow",
                       "trade_usd",
                       "category")])
-
 ```
 
 - - -
@@ -208,6 +208,7 @@ if (nrow(aux_n0) == 0){
 
 print(sort(aux,decreasing=FALSE))
 ```
+
 
  + La siguiente variable a analizar es **country_or_area**:
  
