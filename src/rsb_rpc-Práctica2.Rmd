@@ -51,7 +51,7 @@ El dataset contiene información sobre flujos de exportación e importación de 
 
 Debido al gran volumen que esto supone se va a trabajar con un subconjunto que comprende el periodo entre los años 2006 y 2016.
 
-A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países en un periodo en el que se ha producido una de las mayores crisis a nivel mundial del último siglo.
+A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países en un periodo en el que se ha producido una de las mayores crisis a nivel mundial del último siglo. Las preguntas a las que se pretende dar respuesta son las siguientes:
 
   * ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
 
@@ -74,19 +74,31 @@ Las columnas del dataset son las siguientes:
 
 - - -
 
-##2.- Integración y selección de los datos de interés a analizar.
+##2.- Integración y selección de los datos de interés a analizar
 
 Como el archivo original es muy grande, se ha preparado una versión que contiene únicamente los datos a partir del año 2006. Con el siguiente código se carga dicho archivo.
 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+
+vpath_rsb1 = "C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv"
+
+vpath_rsb2 = "C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv"
+
+vpath_rpc1 = "C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv"
+
+vpath_rpc2 = "C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv"
+
+vpath = vpath_rpc2
+```
+
 ```{r, results='hold'}
-
 # lectura del fichero con datos a partir de 2006
-#cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+cmm_trade_data = read.csv(vpath, head=TRUE, sep = ",")
+```
 
-# cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
-cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
-
+```{r, include=TRUE, echo=FALSE, results='hold'}
+#borrado de variables
+rm(vpath, vpath_rsb1, vpath_rsb2, vpath_rpc1, vpath_rpc2)
 ```
 
 Con esto se obtiene un conjunto de datos con las características explicadas anteriormente. Sin embargo, para responder a las cuestiones planteadas, tan solo es necesario trabajar con las siguientes columnas.
@@ -125,7 +137,7 @@ summary(G_20_data)
 
 ###3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
 
-Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las siguientes:
+Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las que enumeramos a continuación, se trata de todas las columnas del dataset "G_20_data":
   
   * **country_or_area:** Para hacer análisis por países.
   * **year:** Para estudiar la evolución temporal.
@@ -134,142 +146,44 @@ Según hemos definido anteriormente, las columnas con las que vamos a trabajar s
   * **trade_usd:** Para analizar los volúmenes de las transacciones.
   * **category:** Para agrupar por categorías.
 
-Por tanto, analizaremos la existencia de ceros o elementos vacíos en estas columnas.
+Por tanto, estudiaremos la existencia de ceros o elementos vacíos en estas columnas:
 
-Comenzaremos el análisis detallado por las variables más sencillas:
-
- + En primer lugar **year**:
- 
-```{r, include=TRUE, echo=FALSE, results='hold'}
-## Analizamos la columna year
-aux = G_20_data[c("year")]
-aux = aux[!duplicated(aux$year), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$year=='0' | G_20_data$year=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
-print(sort(aux,decreasing=FALSE))
+```{r, include=TRUE, echo=TRUE, results='hold'}
+# Números de valores desconocidos por campo
+sapply(G_20_data, function(x) sum(is.na(x) | x==0))
 ```
 
-+ A continuación, **flow**, en este caso ya hemos visto en el resumen que todos los valores son de los cuatro tipos esperados:
-
-```{r, include=TRUE, echo=FALSE, results='hold'}
-## Analizamos la columna flow
-aux = G_20_data[c("flow")]
-aux = aux[!duplicated(aux$flow), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$flow=='0' | G_20_data$flow=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
-print(sort(aux,decreasing=FALSE))
-```
-
-
- + La siguiente variable a analizar es **country_or_area**:
+Vemos que ninguna de las columnas contiene ceros ni tampoco valores 'NA', por tanto no tendremos que tratar estos valores. A pesar de no tener que tratar estos valores, vamos analizar en detalle las variables **comm_code** y **category** ya que hemos visto que contienen valores especiales:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
-## Analizamos la columna country_or_area
-aux = G_20_data[c("country_or_area")]
-aux = aux[!duplicated(aux$country_or_area), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$country_or_area=='0' | G_20_data$country_or_area=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
-print(sort(aux,decreasing=FALSE))
-```
-
- + La siguiente variable a analizar es **comm_code**:
- 
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna comm_code
-aux = G_20_data[c("comm_code")]
-aux = aux[!duplicated(aux$comm_code), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$comm_code=='0' | G_20_data$comm_code=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
+print("Valores de comm_code:")
 summary(G_20_data$comm_code)
 ```
 
-    - Para el caso de "comm_code", vemos que existen dos valores aparentemente anómalos o especiales, los trataremos en el punto 3.2, son los siguientes valores:
+Los valores especiales que encontramos son los siguientes:    
 
-      - "999999": que significa "Commodities not specified according to kind"
+  + "999999": que significa "Commodities not specified according to kind"
   
-      - "TOTAL": representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).
+  + "TOTAL": representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).
+  
+Tendremos en cuenta estos valores en los puntos posteriores ya que no hemos de tratarlos como al resto de observaciones.
 
-
- + La siguiente variable a analizar es **trade_usd**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
-## Analizamos la columna trade_usd
-aux = G_20_data[c("trade_usd")]
-aux = aux[!duplicated(aux$trade_usd), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$trade_usd=='0' | G_20_data$trade_usd=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
-summary(G_20_data$trade_usd)
-```
-
- + La siguiente variable a analizar es **category**:
- 
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna category
-aux = G_20_data[c("category")]
-aux = aux[!duplicated(aux$category), ]
-
-aux_n0 <- G_20_data[ which(G_20_data$category=='0' | G_20_data$category=='NA'), ]
-
-if (nrow(aux_n0) == 0){
-  print("No existen nulos ni ceros")
-}else{
-  print("Sí existen nulos ni ceros")
-}
-
-print("-------------------------------------------------------")
-print("Los valores que contiene la columna son los siguientes:")
-print(sort(aux,decreasing=FALSE))
+print("Valores de category:")
+summary(G_20_data$category)
 ```
 
-En cuanto a la variable "category", vemos que se trata de una cadena que concatena dos dígitos y un texto. Hemos visto un valor especial, se trata de "all_commodities", se trata del valor que se carga para "comm_code=TOTAL", por tanto, trataremos estas observciones de forma especial.
+Vemos que para el caso de la variable "category", existe un valor especial, se trata de "all_commodities", este valor se corresponde con observaciones en las que "comm_code=TOTAL", por tanto, trataremos estos casos de forma especial.
 
+```{r, include=FALSE, echo=FALSE, results='hold'}
+## Borramos las variables auxiliares utilizadas
+rm(aux, aux_n0)
+```
 
-###3.2.- Identificación y tratamiento de valores extremos.
+###3.2.- Identificación y tratamiento de valores extremos
 
 Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es *trade_usd*.
 
@@ -317,17 +231,94 @@ plot(G_20_data$trade_usd,
 
 - - -
 
-##4.- Análisis de los datos.
+##4.- Análisis de los datos
 
-###4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).
+En este punto se llevará a cabo un segundo análisis de los datos para conocerlos con un mayor grado de detalle antes de comenzar con el análisis final, el cual nos llevará a la resolución de las preguntas planteadas en el punto 1.
 
-###4.2.- Comprobación de la normalidad y homogeneidad de la varianza.
+###4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar)
+
+En el punto 2, tras un análisis preliminar, hemos definido el conjunto de datos de trabajo mediante una preselección del conjunto original, seleccionando únicamente las variables del conjunto original que hemos estimado que iban a ser necesarias. A partir de dicho conjunto de datos, "G_20_data", vamos a analizar qué variables serán necesarias para dar respuesta a cada una de las preguntas planteadas:
+
+  1. ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
+    
+    * Para dar respuesta a esta primera pregunta utilizaremos la variable **'country_or_area'**, **'year'**, **'trade_usd'**, .
+    
+```{r, include=TRUE, results='hold'}
+G_20_data.I <- G_20_data[c("country_or_area","year","trade_usd")]
+```
+
+
+  2. ¿Cuál será la previsión de exportación de la categoría más exportada por España?
+    
+    * En cuanto a la segunda pregunta planteada, para resolverla, necesitaremos las columnas: **'country_or_area'**, **'year'**, **'flow'**, **'trade_usd'** y **'category'**.
+
+```{r, include=TRUE, results='hold'}
+G_20_data.II <- G_20_data[c("country_or_area","year","flow","trade_usd","category")]
+```
+
+  3. ¿El mercado chino ha resistido mejor la crisis en comparación con el estadounidense?
+    
+    * Para resolver la tercera cuestión, utilizaremos las siguientes columnas del conjunto de datos: **'country_or_area'**, **'year'**, **'flow'** y **'trade_usd'**.
+
+```{r, include=TRUE, results='hold'}
+G_20_data.III <- G_20_data[c("country_or_area","year","flow","trade_usd")]
+```
+
+###4.2.- Comprobación de la normalidad y homogeneidad de la varianza
+
+A continuación, procederemos a analizar la normalidad y hogeneidad de la varianza de los valores que utilizaremos en el estudio.
+
+#### Comprobación de normalidad
+
+Necesitamos comprobar si los valores que toman las variables cuantitativas se ajustan a una distribución normal, para ello podemos utilizar alguno de los test disponibles en las librerías "normtest", "nortest" y "moments". En nuestro caso, utilizaremos la prueba de normalidad de **Anderson-Darling**, disponible en la librería "nortest".
+
+Estableceremos un nivel de significación $\alpha = 0.05$, una vez aplicado el test, si obtenemos un $p-valor$ superior a dicho nivel de significación, se considerará que la variable sigue una distribución normal.
+
+```{r, include=TRUE, results='hold'}
+# para llevar a cabo este test, utilizaremos la librería normtest:
+library(nortest)
+
+alpha = 0.05
+
+# llevamos a cabo el test de Anderson-Darling para la columna "trade_usd"
+p_valor <- ad.test(G_20_data[,5])$p.value
+
+paste("Obtenemos un p-valor de: ",p_valor)
+
+if (p_valor > alpha){
+  print("La variable 'trade_usd' sí sigue una distribución normal")
+}else{
+  print("La variable 'trade_usd' no sigue una distribución normal")
+}
+```
+
+#### Homogeneidad de la varianza
+
+A continuación, estudiaremos la homogeneidad de varianzas en cuanto a los diferentes países, para ello aplicaremos el test de **Fligner-Killen**. La hipótesis nula representa que las varianzas son iguales.
+
+Para el estudio de la homogeneidad de la varianza, estableceremos el mismo nivel de significación que para el estudio de la normalidad: $\alpha = 0.05$
+
+```{r, include=TRUE, results='hold'}
+
+flt <- fligner.test(trade_usd ~ country_or_area, data=G_20_data)
+
+print(flt)
+
+p_valor <- flt$p.value
+
+if (p_valor > alpha){
+  print("Las muestras sí son homogéneas")
+}else{
+  print("Las muestras no son homogéneas")
+}
+
+```
 
 ###4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.
 
 - - -
 
-##5.- Representación de los resultados a partir de tablas y gráficas.
+##5.- Representación de los resultados a partir de tablas y gráficas
 
 - - -
 
