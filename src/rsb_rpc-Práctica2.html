@@ -130,17 +130,17 @@ $(document).ready(function () {
 <ul>
 <li><a href="#introduccion">Introducción</a></li>
 <li><a href="#descripcion-del-dataset.-por-que-es-importante-y-que-preguntaproblema-pretende-responder">1.- Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende responder?</a></li>
-<li><a href="#integracion-y-seleccion-de-los-datos-de-interes-a-analizar.">2.- Integración y selección de los datos de interés a analizar.</a></li>
+<li><a href="#integracion-y-seleccion-de-los-datos-de-interes-a-analizar">2.- Integración y selección de los datos de interés a analizar</a></li>
 <li><a href="#limpieza-de-los-datos">3.- Limpieza de los datos</a><ul>
 <li><a href="#los-datos-contienen-ceros-o-elementos-vacios-como-gestionarias-cada-uno-de-estos-casos">3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?</a></li>
-<li><a href="#identificacion-y-tratamiento-de-valores-extremos.">3.2.- Identificación y tratamiento de valores extremos.</a></li>
+<li><a href="#identificacion-y-tratamiento-de-valores-extremos">3.2.- Identificación y tratamiento de valores extremos</a></li>
 </ul></li>
-<li><a href="#analisis-de-los-datos.">4.- Análisis de los datos.</a><ul>
-<li><a href="#seleccion-de-los-grupos-de-datos-que-se-quieren-analizarcomparar-planificacion-de-los-analisis-a-aplicar.">4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).</a></li>
-<li><a href="#comprobacion-de-la-normalidad-y-homogeneidad-de-la-varianza.">4.2.- Comprobación de la normalidad y homogeneidad de la varianza.</a></li>
+<li><a href="#analisis-de-los-datos">4.- Análisis de los datos</a><ul>
+<li><a href="#seleccion-de-los-grupos-de-datos-que-se-quieren-analizarcomparar-planificacion-de-los-analisis-a-aplicar">4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar)</a></li>
+<li><a href="#comprobacion-de-la-normalidad-y-homogeneidad-de-la-varianza">4.2.- Comprobación de la normalidad y homogeneidad de la varianza</a></li>
 <li><a href="#aplicacion-de-pruebas-estadisticas-para-comparar-los-grupos-de-datos.-en-funcion-de-los-datos-y-el-objetivo-del-estudio-aplicar-pruebas-de-contraste-de-hipotesis-correlaciones-regresiones-etc.">4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.</a></li>
 </ul></li>
-<li><a href="#representacion-de-los-resultados-a-partir-de-tablas-y-graficas.">5.- Representación de los resultados a partir de tablas y gráficas.</a></li>
+<li><a href="#representacion-de-los-resultados-a-partir-de-tablas-y-graficas">5.- Representación de los resultados a partir de tablas y gráficas</a></li>
 <li><a href="#resolucion-del-problema.-a-partir-de-los-resultados-obtenidos-cuales-son-las-conclusiones-los-resultados-permiten-responder-al-problema">6.- Resolución del problema. A partir de los resultados obtenidos, ¿cuáles son las conclusiones? ¿Los resultados permiten responder al problema?</a></li>
 <li><a href="#codigo-hay-que-adjuntar-el-codigo-preferiblemente-en-r-con-el-que-se-ha-realizado-la-limpieza-analisis-y-representacion-de-los-datos.-si-lo-preferis-tambien-podeis-trabajar-en-python.">7.- Código: Hay que adjuntar el código, preferiblemente en R, con el que se ha realizado la limpieza, análisis y representación de los datos. Si lo preferís, también podéis trabajar en Python.</a></li>
 <li><a href="#criterios-de-valoracion">Criterios de valoración</a></li>
@@ -169,7 +169,7 @@ body {text-align: justify}
 <p>Se trata de un dataset originalmente publicado por “United Nations Statistics Division” en la página de UNData (<a href="http://data.un.org/Explorer.aspx" class="uri">http://data.un.org/Explorer.aspx</a>). Los términos de uso dicen que todos los datos y metadatos provenientes de la página de UNData pueden ser utilizados sin coste y pueden ser copiados libremente y distribuidos posteriormente siempre y cuando se cite a UNdata como fuente original.</p>
 <p>El dataset contiene información sobre flujos de exportación e importación de animales y productos de consumo de países del mundo durante un periodo de 30 años.</p>
 <p>Debido al gran volumen que esto supone se va a trabajar con un subconjunto que comprende el periodo entre los años 2006 y 2016.</p>
-<p>A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países en un periodo en el que se ha producido una de las mayores crisis a nivel mundial del último siglo.</p>
+<p>A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exportaciones e importaciones de los países en un periodo en el que se ha producido una de las mayores crisis a nivel mundial del último siglo. Las preguntas a las que se pretende dar respuesta son las siguientes:</p>
 <ul>
 <li><p>¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?</p></li>
 <li><p>¿Cuál será la previsión de exportación de la categoría más exportada por España?</p></li>
@@ -190,15 +190,11 @@ body {text-align: justify}
 </ul>
 <hr />
 </div>
-<div id="integracion-y-seleccion-de-los-datos-de-interes-a-analizar." class="section level2">
-<h2>2.- Integración y selección de los datos de interés a analizar.</h2>
+<div id="integracion-y-seleccion-de-los-datos-de-interes-a-analizar" class="section level2">
+<h2>2.- Integración y selección de los datos de interés a analizar</h2>
 <p>Como el archivo original es muy grande, se ha preparado una versión que contiene únicamente los datos a partir del año 2006. Con el siguiente código se carga dicho archivo.</p>
 <pre class="r"><code># lectura del fichero con datos a partir de 2006
-#cmm_trade_data = read.csv(&quot;C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv&quot;, head=TRUE, sep = &quot;,&quot;)
-
-# cmm_trade_data = read.csv(&quot;C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv&quot;, head=TRUE, sep = &quot;,&quot;)
-
-cmm_trade_data = read.csv(&quot;C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv&quot;, head=TRUE, sep = &quot;,&quot;)</code></pre>
+cmm_trade_data = read.csv(vpath, head=TRUE, sep = &quot;,&quot;)</code></pre>
 <p>Con esto se obtiene un conjunto de datos con las características explicadas anteriormente. Sin embargo, para responder a las cuestiones planteadas, tan solo es necesario trabajar con las siguientes columnas.</p>
 <ul>
 <li><strong>country_or_area:</strong> Para hacer análisis por países.</li>
@@ -250,7 +246,7 @@ summary(G_20_data)</code></pre>
 ##  (Other)                                      :768938</code></pre>
 <div id="los-datos-contienen-ceros-o-elementos-vacios-como-gestionarias-cada-uno-de-estos-casos" class="section level3">
 <h3>3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?</h3>
-<p>Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las siguientes:</p>
+<p>Según hemos definido anteriormente, las columnas con las que vamos a trabajar son las que enumeramos a continuación, se trata de todas las columnas del dataset “G_20_data”:</p>
 <ul>
 <li><strong>country_or_area:</strong> Para hacer análisis por países.</li>
 <li><strong>year:</strong> Para estudiar la evolución temporal.</li>
@@ -259,44 +255,18 @@ summary(G_20_data)</code></pre>
 <li><strong>trade_usd:</strong> Para analizar los volúmenes de las transacciones.</li>
 <li><strong>category:</strong> Para agrupar por categorías.</li>
 </ul>
-<p>Por tanto, analizaremos la existencia de ceros o elementos vacíos en estas columnas.</p>
-<p>Comenzaremos el análisis detallado por las variables más sencillas:</p>
-<ul>
-<li>En primer lugar <strong>year</strong>:</li>
-</ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
-##  [1] 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016</code></pre>
-<ul>
-<li>A continuación, <strong>flow</strong>, en este caso ya hemos visto en el resumen que todos los valores son de los cuatro tipos esperados:</li>
-</ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
-## [1] Export    Import    Re-Export Re-Import
-## Levels: Export Import Re-Export Re-Import</code></pre>
-<ul>
-<li>La siguiente variable a analizar es <strong>country_or_area</strong>:</li>
-</ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
-##  [1] Argentina            Australia            Brazil              
-##  [4] Canada               China                China, Hong Kong SAR
-##  [7] China, Macao SAR     France               Germany             
-## [10] India                Indonesia            Italy               
-## [13] Japan                Mexico               Rep. of Korea       
-## [16] Russian Federation   Saudi Arabia         South Africa        
-## [19] Spain                Turkey               United Kingdom      
-## [22] USA                 
-## 195 Levels: Afghanistan Albania Algeria Andorra Angola ... Zimbabwe</code></pre>
-<ul>
-<li>La siguiente variable a analizar es <strong>comm_code</strong>:</li>
-</ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
+<p>Por tanto, estudiaremos la existencia de ceros o elementos vacíos en estas columnas:</p>
+<pre class="r"><code># Números de valores desconocidos por campo
+sapply(G_20_data, function(x) sum(is.na(x) | x==0))</code></pre>
+<pre><code>## country_or_area            year       comm_code            flow 
+##               0               0               0               0 
+##       trade_usd        category 
+##               0               0</code></pre>
+<p>Vemos que ninguna de las columnas contiene ceros ni tampoco valores ‘NA’, por tanto no tendremos que tratar estos valores. A pesar de no tener que tratar estos valores, vamos analizar en detalle las variables <strong>comm_code</strong> y <strong>category</strong> ya que hemos visto que contienen valores especiales:</p>
+<pre class="r"><code>## Analizamos la columna comm_code
+print(&quot;Valores de comm_code:&quot;)
+summary(G_20_data$comm_code)</code></pre>
+<pre><code>## [1] &quot;Valores de comm_code:&quot;
 ##   TOTAL  210690  350699  190590  650590  350691  170490  190530  970110 
 ##     646     618     615     614     613     612     611     611     609 
 ##  999999  210390  650610  860900  180690  240220  230990  970300  970190 
@@ -321,128 +291,216 @@ summary(G_20_data)</code></pre>
 ##     547     547     546     546     545     544     544     543     542 
 ## (Other) 
 ##  813083</code></pre>
-<pre><code>- Para el caso de &quot;comm_code&quot;, vemos que existen dos valores aparentemente anómalos o especiales, los trataremos en el punto 3.2, son los siguientes valores:
-
-  - &quot;999999&quot;: que significa &quot;Commodities not specified according to kind&quot;
-
-  - &quot;TOTAL&quot;: representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).</code></pre>
+<p>Los valores especiales que encontramos son los siguientes:</p>
 <ul>
-<li>La siguiente variable a analizar es <strong>trade_usd</strong>:</li>
+<li><p>“999999”: que significa “Commodities not specified according to kind”</p></li>
+<li><p>“TOTAL”: representa, por país y año, el total en USD de cada uno de los posibles flujos (exportaciones, importaciones, re-exportaciones y re-importaciones).</p></li>
 </ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
-##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-## 1.000e+00 1.442e+05 1.874e+06 3.646e+08 1.572e+07 2.411e+12</code></pre>
-<ul>
-<li>La siguiente variable a analizar es <strong>category</strong>:</li>
-</ul>
-<pre><code>## [1] &quot;No existen nulos ni ceros&quot;
-## [1] &quot;-------------------------------------------------------&quot;
-## [1] &quot;Los valores que contiene la columna son los siguientes:&quot;
-##  [1] 01_live_animals                                       
-##  [2] 02_meat_and_edible_meat_offal                         
-##  [3] 03_fish_crustaceans_molluscs_aquatic_invertebrates_ne 
-##  [4] 04_dairy_products_eggs_honey_edible_animal_product_nes
-##  [5] 05_products_of_animal_origin_nes                      
-##  [6] 06_live_trees_plants_bulbs_roots_cut_flowers_etc      
-##  [7] 07_edible_vegetables_and_certain_roots_and_tubers     
-##  [8] 08_edible_fruit_nuts_peel_of_citrus_fruit_melons      
-##  [9] 09_coffee_tea_mate_and_spices                         
-## [10] 10_cereals                                            
-## [11] 11_milling_products_malt_starches_inulin_wheat_glute  
-## [12] 12_oil_seed_oleagic_fruits_grain_seed_fruit_etc_ne    
-## [13] 13_lac_gums_resins_vegetable_saps_and_extracts_nes    
-## [14] 14_vegetable_plaiting_materials_vegetable_products_nes
-## [15] 15_animal_vegetable_fats_and_oils_cleavage_products_et
-## [16] 16_meat_fish_and_seafood_food_preparations_nes        
-## [17] 17_sugars_and_sugar_confectionery                     
-## [18] 18_cocoa_and_cocoa_preparations                       
-## [19] 19_cereal_flour_starch_milk_preparations_and_products 
-## [20] 20_vegetable_fruit_nut_etc_food_preparations          
-## [21] 21_miscellaneous_edible_preparations                  
-## [22] 22_beverages_spirits_and_vinegar                      
-## [23] 23_residues_wastes_of_food_industry_animal_fodder     
-## [24] 24_tobacco_and_manufactured_tobacco_substitutes       
-## [25] 25_salt_sulphur_earth_stone_plaster_lime_and_cement   
-## [26] 26_ores_slag_and_ash                                  
-## [27] 27_mineral_fuels_oils_distillation_products_etc       
-## [28] 28_inorganic_chemicals_precious_metal_compound_isotope
-## [29] 29_organic_chemicals                                  
-## [30] 30_pharmaceutical_products                            
-## [31] 31_fertilizers                                        
-## [32] 32_tanning_dyeing_extracts_tannins_derivs_pigments_et 
-## [33] 33_essential_oils_perfumes_cosmetics_toileteries      
-## [34] 34_soaps_lubricants_waxes_candles_modelling_pastes    
-## [35] 35_albuminoids_modified_starches_glues_enzymes        
-## [36] 36_explosives_pyrotechnics_matches_pyrophorics_etc    
-## [37] 37_photographic_or_cinematographic_goods              
-## [38] 38_miscellaneous_chemical_products                    
-## [39] 39_plastics_and_articles_thereof                      
-## [40] 40_rubber_and_articles_thereof                        
-## [41] 41_raw_hides_and_skins_other_than_furskins_and_leather
-## [42] 42_articles_of_leather_animal_gut_harness_travel_good 
-## [43] 43_furskins_and_artificial_fur_manufactures_thereof   
-## [44] 44_wood_and_articles_of_wood_wood_charcoal            
-## [45] 45_cork_and_articles_of_cork                          
-## [46] 46_manufactures_of_plaiting_material_basketwork_etc   
-## [47] 47_pulp_of_wood_fibrous_cellulosic_material_waste_etc 
-## [48] 48_paper_paperboard_articles_of_pulp_paper_and_board  
-## [49] 49_printed_books_newspapers_pictures_etc              
-## [50] 50_silk                                               
-## [51] 51_wool_animal_hair_horsehair_yarn_and_fabric_thereof 
-## [52] 52_cotton                                             
-## [53] 53_vegetable_textile_fibres_nes_paper_yarn_woven_fabri
-## [54] 54_manmade_filaments                                  
-## [55] 55_manmade_staple_fibres                              
-## [56] 56_wadding_felt_nonwovens_yarns_twine_cordage_etc     
-## [57] 57_carpets_and_other_textile_floor_coverings          
-## [58] 58_special_woven_or_tufted_fabric_lace_tapestry_etc   
-## [59] 59_impregnated_coated_or_laminated_textile_fabric     
-## [60] 60_knitted_or_crocheted_fabric                        
-## [61] 61_articles_of_apparel_accessories_knit_or_crochet    
-## [62] 62_articles_of_apparel_accessories_not_knit_or_crochet
-## [63] 63_other_made_textile_articles_sets_worn_clothing_etc 
-## [64] 64_footwear_gaiters_and_the_like_parts_thereof        
-## [65] 65_headgear_and_parts_thereof                         
-## [66] 66_umbrellas_walking_sticks_seat_sticks_whips_etc     
-## [67] 67_bird_skin_feathers_artificial_flowers_human_hair   
-## [68] 68_stone_plaster_cement_asbestos_mica_etc_articles    
-## [69] 69_ceramic_products                                   
-## [70] 70_glass_and_glassware                                
-## [71] 71_pearls_precious_stones_metals_coins_etc            
-## [72] 72_iron_and_steel                                     
-## [73] 73_articles_of_iron_or_steel                          
-## [74] 74_copper_and_articles_thereof                        
-## [75] 75_nickel_and_articles_thereof                        
-## [76] 76_aluminium_and_articles_thereof                     
-## [77] 78_lead_and_articles_thereof                          
-## [78] 79_zinc_and_articles_thereof                          
-## [79] 80_tin_and_articles_thereof                           
-## [80] 81_other_base_metals_cermets_articles_thereof         
-## [81] 82_tools_implements_cutlery_etc_of_base_metal         
-## [82] 83_miscellaneous_articles_of_base_metal               
-## [83] 84_nuclear_reactors_boilers_machinery_etc             
-## [84] 85_electrical_electronic_equipment                    
-## [85] 86_railway_tramway_locomotives_rolling_stock_equipmen 
-## [86] 87_vehicles_other_than_railway_tramway                
-## [87] 88_aircraft_spacecraft_and_parts_thereof              
-## [88] 89_ships_boats_and_other_floating_structures          
-## [89] 90_optical_photo_technical_medical_etc_apparatus      
-## [90] 91_clocks_and_watches_and_parts_thereof               
-## [91] 92_musical_instruments_parts_and_accessories          
-## [92] 93_arms_and_ammunition_parts_and_accessories_thereof  
-## [93] 94_furniture_lighting_signs_prefabricated_buildings   
-## [94] 95_toys_games_sports_requisites                       
-## [95] 96_miscellaneous_manufactured_articles                
-## [96] 97_works_of_art_collectors_pieces_and_antiques        
-## [97] 99_commodities_not_specified_according_to_kind        
-## [98] all_commodities                                       
-## 98 Levels: 01_live_animals ... all_commodities</code></pre>
-<p>En cuanto a la variable “category”, vemos que se trata de una cadena que concatena dos dígitos y un texto. Hemos visto un valor especial, se trata de “all_commodities”, se trata del valor que se carga para “comm_code=TOTAL”, por tanto, trataremos estas observciones de forma especial.</p>
+<p>Tendremos en cuenta estos valores en los puntos posteriores ya que no hemos de tratarlos como al resto de observaciones.</p>
+<pre class="r"><code>## Analizamos la columna category
+print(&quot;Valores de category:&quot;)
+summary(G_20_data$category)</code></pre>
+<pre><code>## [1] &quot;Valores de category:&quot;
+##                                        01_live_animals 
+##                                                   5388 
+##                          02_meat_and_edible_meat_offal 
+##                                                  11112 
+##  03_fish_crustaceans_molluscs_aquatic_invertebrates_ne 
+##                                                  10920 
+## 04_dairy_products_eggs_honey_edible_animal_product_nes 
+##                                                   7938 
+##                       05_products_of_animal_origin_nes 
+##                                                   6593 
+##       06_live_trees_plants_bulbs_roots_cut_flowers_etc 
+##                                                   5523 
+##      07_edible_vegetables_and_certain_roots_and_tubers 
+##                                                   9726 
+##       08_edible_fruit_nuts_peel_of_citrus_fruit_melons 
+##                                                  10598 
+##                          09_coffee_tea_mate_and_spices 
+##                                                   9096 
+##                                             10_cereals 
+##                                                   7545 
+##   11_milling_products_malt_starches_inulin_wheat_glute 
+##                                                   8516 
+##     12_oil_seed_oleagic_fruits_grain_seed_fruit_etc_ne 
+##                                                  10632 
+##     13_lac_gums_resins_vegetable_saps_and_extracts_nes 
+##                                                   4850 
+## 14_vegetable_plaiting_materials_vegetable_products_nes 
+##                                                   2460 
+## 15_animal_vegetable_fats_and_oils_cleavage_products_et 
+##                                                  11356 
+##         16_meat_fish_and_seafood_food_preparations_nes 
+##                                                   8772 
+##                      17_sugars_and_sugar_confectionery 
+##                                                   7658 
+##                        18_cocoa_and_cocoa_preparations 
+##                                                   5571 
+##  19_cereal_flour_starch_milk_preparations_and_products 
+##                                                   8729 
+##           20_vegetable_fruit_nut_etc_food_preparations 
+##                                                   9937 
+##                   21_miscellaneous_edible_preparations 
+##                                                   8282 
+##                       22_beverages_spirits_and_vinegar 
+##                                                   7738 
+##      23_residues_wastes_of_food_industry_animal_fodder 
+##                                                   9171 
+##        24_tobacco_and_manufactured_tobacco_substitutes 
+##                                                   4361 
+##    25_salt_sulphur_earth_stone_plaster_lime_and_cement 
+##                                                   9931 
+##                                   26_ores_slag_and_ash 
+##                                                  12918 
+##        27_mineral_fuels_oils_distillation_products_etc 
+##                                                  10570 
+## 28_inorganic_chemicals_precious_metal_compound_isotope 
+##                                                  10246 
+##                                   29_organic_chemicals 
+##                                                  11530 
+##                             30_pharmaceutical_products 
+##                                                   9496 
+##                                         31_fertilizers 
+##                                                   9742 
+##  32_tanning_dyeing_extracts_tannins_derivs_pigments_et 
+##                                                  10347 
+##       33_essential_oils_perfumes_cosmetics_toileteries 
+##                                                  10059 
+##     34_soaps_lubricants_waxes_candles_modelling_pastes 
+##                                                   8160 
+##         35_albuminoids_modified_starches_glues_enzymes 
+##                                                   7029 
+##     36_explosives_pyrotechnics_matches_pyrophorics_etc 
+##                                                   3797 
+##               37_photographic_or_cinematographic_goods 
+##                                                   9419 
+##                     38_miscellaneous_chemical_products 
+##                                                  10961 
+##                       39_plastics_and_articles_thereof 
+##                                                   8885 
+##                         40_rubber_and_articles_thereof 
+##                                                  11925 
+## 41_raw_hides_and_skins_other_than_furskins_and_leather 
+##                                                   9413 
+##  42_articles_of_leather_animal_gut_harness_travel_good 
+##                                                   7722 
+##    43_furskins_and_artificial_fur_manufactures_thereof 
+##                                                   5323 
+##             44_wood_and_articles_of_wood_wood_charcoal 
+##                                                   9117 
+##                           45_cork_and_articles_of_cork 
+##                                                   3441 
+##    46_manufactures_of_plaiting_material_basketwork_etc 
+##                                                   2678 
+##  47_pulp_of_wood_fibrous_cellulosic_material_waste_etc 
+##                                                   7594 
+##   48_paper_paperboard_articles_of_pulp_paper_and_board 
+##                                                  10078 
+##               49_printed_books_newspapers_pictures_etc 
+##                                                   8160 
+##                                                50_silk 
+##                                                   4048 
+##  51_wool_animal_hair_horsehair_yarn_and_fabric_thereof 
+##                                                  11828 
+##                                              52_cotton 
+##                                                  18344 
+## 53_vegetable_textile_fibres_nes_paper_yarn_woven_fabri 
+##                                                  10139 
+##                                   54_manmade_filaments 
+##                                                  12498 
+##                               55_manmade_staple_fibres 
+##                                                  16370 
+##      56_wadding_felt_nonwovens_yarns_twine_cordage_etc 
+##                                                   8439 
+##           57_carpets_and_other_textile_floor_coverings 
+##                                                   9407 
+##    58_special_woven_or_tufted_fabric_lace_tapestry_etc 
+##                                                  12386 
+##      59_impregnated_coated_or_laminated_textile_fabric 
+##                                                   9635 
+##                         60_knitted_or_crocheted_fabric 
+##                                                   9119 
+##     61_articles_of_apparel_accessories_knit_or_crochet 
+##                                                  11587 
+## 62_articles_of_apparel_accessories_not_knit_or_crochet 
+##                                                   8276 
+##  63_other_made_textile_articles_sets_worn_clothing_etc 
+##                                                   9711 
+##         64_footwear_gaiters_and_the_like_parts_thereof 
+##                                                   9149 
+##                          65_headgear_and_parts_thereof 
+##                                                   4830 
+##      66_umbrellas_walking_sticks_seat_sticks_whips_etc 
+##                                                   3276 
+##    67_bird_skin_feathers_artificial_flowers_human_hair 
+##                                                   4329 
+##     68_stone_plaster_cement_asbestos_mica_etc_articles 
+##                                                  10472 
+##                                    69_ceramic_products 
+##                                                   9882 
+##                                 70_glass_and_glassware 
+##                                                  10243 
+##             71_pearls_precious_stones_metals_coins_etc 
+##                                                  14689 
+##                                      72_iron_and_steel 
+##                                                   9390 
+##                           73_articles_of_iron_or_steel 
+##                                                   8627 
+##                         74_copper_and_articles_thereof 
+##                                                  11401 
+##                         75_nickel_and_articles_thereof 
+##                                                   7673 
+##                      76_aluminium_and_articles_thereof 
+##                                                  11484 
+##                           78_lead_and_articles_thereof 
+##                                                   3977 
+##                           79_zinc_and_articles_thereof 
+##                                                   4611 
+##                            80_tin_and_articles_thereof 
+##                                                   2729 
+##          81_other_base_metals_cermets_articles_thereof 
+##                                                  14674 
+##          82_tools_implements_cutlery_etc_of_base_metal 
+##                                                  12417 
+##                83_miscellaneous_articles_of_base_metal 
+##                                                  10926 
+##              84_nuclear_reactors_boilers_machinery_etc 
+##                                                  23166 
+##                     85_electrical_electronic_equipment 
+##                                                  12234 
+##  86_railway_tramway_locomotives_rolling_stock_equipmen 
+##                                                   9844 
+##                 87_vehicles_other_than_railway_tramway 
+##                                                  13491 
+##               88_aircraft_spacecraft_and_parts_thereof 
+##                                                   6515 
+##           89_ships_boats_and_other_floating_structures 
+##                                                   7966 
+##       90_optical_photo_technical_medical_etc_apparatus 
+##                                                   7369 
+##                91_clocks_and_watches_and_parts_thereof 
+##                                                  12124 
+##           92_musical_instruments_parts_and_accessories 
+##                                                   8343 
+##   93_arms_and_ammunition_parts_and_accessories_thereof 
+##                                                   6344 
+##    94_furniture_lighting_signs_prefabricated_buildings 
+##                                                   9649 
+##                        95_toys_games_sports_requisites 
+##                                                   9284 
+##                 96_miscellaneous_manufactured_articles 
+##                                                  10605 
+##         97_works_of_art_collectors_pieces_and_antiques 
+##                                                   3905 
+##         99_commodities_not_specified_according_to_kind 
+##                                                    608 
+##                                        all_commodities 
+##                                                    646</code></pre>
+<p>Vemos que para el caso de la variable “category”, existe un valor especial, se trata de “all_commodities”, este valor se corresponde con observaciones en las que “comm_code=TOTAL”, por tanto, trataremos estos casos de forma especial.</p>
 </div>
-<div id="identificacion-y-tratamiento-de-valores-extremos." class="section level3">
-<h3>3.2.- Identificación y tratamiento de valores extremos.</h3>
+<div id="identificacion-y-tratamiento-de-valores-extremos" class="section level3">
+<h3>3.2.- Identificación y tratamiento de valores extremos</h3>
 <p>Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es <em>trade_usd</em>.</p>
 <p>Como se acaba de ver en el punto anterior, el conjunto de datos cuenta con filas sumatorio (comm_code= TOTAL o 999999). Estas filas no son válidas para realizar los análisis propuestos con lo que se procede a limpiar el conjunto de datos eliminándolas.</p>
 <pre class="r"><code>G_20_data &lt;- G_20_data[G_20_data$comm_code != &quot;999999&quot; &amp;
@@ -471,21 +529,84 @@ plot(G_20_data$trade_usd,
 <hr />
 </div>
 </div>
-<div id="analisis-de-los-datos." class="section level2">
-<h2>4.- Análisis de los datos.</h2>
-<div id="seleccion-de-los-grupos-de-datos-que-se-quieren-analizarcomparar-planificacion-de-los-analisis-a-aplicar." class="section level3">
-<h3>4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).</h3>
+<div id="analisis-de-los-datos" class="section level2">
+<h2>4.- Análisis de los datos</h2>
+<p>En este punto se llevará a cabo un segundo análisis de los datos para conocerlos con un mayor grado de detalle antes de comenzar con el análisis final, el cual nos llevará a la resolución de las preguntas planteadas en el punto 1.</p>
+<div id="seleccion-de-los-grupos-de-datos-que-se-quieren-analizarcomparar-planificacion-de-los-analisis-a-aplicar" class="section level3">
+<h3>4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar)</h3>
+<p>En el punto 2, tras un análisis preliminar, hemos definido el conjunto de datos de trabajo mediante una preselección del conjunto original, seleccionando únicamente las variables del conjunto original que hemos estimado que iban a ser necesarias. A partir de dicho conjunto de datos, “G_20_data”, vamos a analizar qué variables serán necesarias para dar respuesta a cada una de las preguntas planteadas:</p>
+<ol style="list-style-type: decimal">
+<li><p>¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?</p>
+<ul>
+<li>Para dar respuesta a esta primera pregunta utilizaremos la variable <strong>‘trade_usd’</strong>.</li>
+</ul></li>
+<li><p>¿Cuál será la previsión de exportación de la categoría más exportada por España?</p>
+<ul>
+<li>En cuanto a la segunda pregunta planteada, para resolverla, necesitaremos las columnas: <strong>‘country_or_area’</strong>, <strong>‘year’</strong>, <strong>‘flow’</strong>, <strong>‘trade_usd’</strong> y <strong>‘category’</strong>.</li>
+</ul></li>
+<li><p>¿El mercado chino ha resistido mejor la crisis en comparación con el estadounidense?</p>
+<ul>
+<li>Para resolver la tercera cuestión, utilizaremos las siguientes columnas del conjunto de datos: <strong>‘country_or_area’</strong>, <strong>‘year’</strong>, <strong>‘flow’</strong> y <strong>‘trade_usd’</strong>.</li>
+</ul></li>
+</ol>
 </div>
-<div id="comprobacion-de-la-normalidad-y-homogeneidad-de-la-varianza." class="section level3">
-<h3>4.2.- Comprobación de la normalidad y homogeneidad de la varianza.</h3>
+<div id="comprobacion-de-la-normalidad-y-homogeneidad-de-la-varianza" class="section level3">
+<h3>4.2.- Comprobación de la normalidad y homogeneidad de la varianza</h3>
+<p>A continuación, procederemos a analizar la normalidad y hogeneidad de la varianza de los valores que utilizaremos en el estudio.</p>
+<div id="comprobacion-de-normalidad" class="section level4">
+<h4>Comprobación de normalidad</h4>
+<p>Necesitamos comprobar si los valores que toman las variables cuantitativas se ajustan a una distribución normal, para ello podemos utilizar alguno de los test disponibles en las librerías “normtest”, “nortest” y “moments”. En nuestro caso, utilizaremos la prueba de normalidad de <strong>Anderson-Darling</strong>, disponible en la librería “nortest”.</p>
+<p>Estableceremos un nivel de significación <span class="math inline">\(\alpha = 0.05\)</span>, una vez aplicado el test, si obtenemos un <span class="math inline">\(p-valor\)</span> superior a dicho nivel de significación, se considerará que la variable sigue una distribución normal.</p>
+<pre class="r"><code># para llevar a cabo este test, utilizaremos la librería normtest:
+library(nortest)
+
+alpha = 0.05
+
+# llevamos a cabo el test de Anderson-Darling para la columna &quot;trade_usd&quot;
+p_valor &lt;- ad.test(G_20_data[,5])$p.value
+
+paste(&quot;Obtenemos un p-valor de: &quot;,p_valor)
+
+if (p_valor &gt; alpha){
+  print(&quot;La variable 'trade_usd' sí sigue una distribución normal&quot;)
+}else{
+  print(&quot;La variable 'trade_usd' no sigue una distribución normal&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Obtenemos un p-valor de:  3.7e-24&quot;
+## [1] &quot;La variable 'trade_usd' no sigue una distribución normal&quot;</code></pre>
+</div>
+<div id="homogeneidad-de-la-varianza" class="section level4">
+<h4>Homogeneidad de la varianza</h4>
+<p>A continuación, estudiaremos la homogeneidad de varianzas en cuanto a los diferentes países, para ello aplicaremos el test de <strong>Fligner-Killen</strong>. La hipótesis nula representa que las varianzas son iguales.</p>
+<p>Para el estudio de la homogeneidad de la varianza, estableceremos el mismo nivel de significación que para el estudio de la normalidad: <span class="math inline">\(\alpha = 0.05\)</span></p>
+<pre class="r"><code>flt &lt;- fligner.test(trade_usd ~ country_or_area, data=G_20_data)
+
+print(flt)
+
+p_valor &lt;- flt$p.value
+
+if (p_valor &gt; alpha){
+  print(&quot;Las muestras sí son homogéneas&quot;)
+}else{
+  print(&quot;Las muestras no son homogéneas&quot;)
+}</code></pre>
+<pre><code>## 
+##  Fligner-Killeen test of homogeneity of variances
+## 
+## data:  trade_usd by country_or_area
+## Fligner-Killeen:med chi-squared = 202680, df = 21, p-value &lt;
+## 2.2e-16
+## 
+## [1] &quot;Las muestras no son homogéneas&quot;</code></pre>
+</div>
 </div>
 <div id="aplicacion-de-pruebas-estadisticas-para-comparar-los-grupos-de-datos.-en-funcion-de-los-datos-y-el-objetivo-del-estudio-aplicar-pruebas-de-contraste-de-hipotesis-correlaciones-regresiones-etc." class="section level3">
 <h3>4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.</h3>
 <hr />
 </div>
 </div>
-<div id="representacion-de-los-resultados-a-partir-de-tablas-y-graficas." class="section level2">
-<h2>5.- Representación de los resultados a partir de tablas y gráficas.</h2>
+<div id="representacion-de-los-resultados-a-partir-de-tablas-y-graficas" class="section level2">
+<h2>5.- Representación de los resultados a partir de tablas y gráficas</h2>
 <hr />
 </div>
 <div id="resolucion-del-problema.-a-partir-de-los-resultados-obtenidos-cuales-son-las-conclusiones-los-resultados-permiten-responder-al-problema" class="section level2">
