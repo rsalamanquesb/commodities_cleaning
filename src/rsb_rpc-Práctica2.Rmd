@@ -241,7 +241,7 @@ En el punto 2, tras un análisis preliminar, hemos definido el conjunto de datos
 
   1. ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
     
-    * Para dar respuesta a esta primera pregunta utilizaremos la variable **'country_or_area'**, **'year'**, **'trade_usd'**, .
+    * Para dar respuesta a esta primera pregunta utilizaremos la variable **'country_or_area'**, **'year'** y **'trade_usd'**.
     
 ```{r, include=TRUE, results='hold'}
 G_20_data.I <- G_20_data[c("country_or_area","year","trade_usd")]
