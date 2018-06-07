@@ -329,9 +329,9 @@ plot(G_20_data$trade_usd,
 
 Para la resolución de la primera pregunta planteada será necesario obtener un conjunto de datos que agrupe por país y por año el volumen de transacciones totales. Para ello se hará uso de la bilbioteca *dplyr* de R.
 
-```{r, include=TRUE, echo=FALSE, warning=FALSE}
+```{r, include=TRUE, echo=TRUE, warning=FALSE}
 
-library(dplyr) #Para manipular los datos
+library(dplyr, warn.conflicts=FALSE) #Para manipular los datos
 
 ```
 
@@ -351,24 +351,7 @@ country_year_data$suma <- country_year_data$suma/1000000000
 
 ###4.2.- Comprobación de la normalidad y homogeneidad de la varianza.
 
-```{r, include=TRUE, results='hold'}
-library(normtest)
-```
 
-```{r, include=TRUE, results='hold'}
-
-plot(density(G_20_data$trade_usd), 
-     xlab="Valores de trade_usd",
-     ylab="Densidad",
-     col="skyblue"
-     )
-
-```
-
-```{r, include=TRUE, results='hold'}
-#wb.norm.test(G_20_data$trade_usd)
-
-```
 
 
 ###4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.
@@ -401,8 +384,10 @@ ggplot(country_year_data, aes(x=year, y=suma, shape=country_or_area, color=count
   theme(legend.text = element_text(size=8))+
   theme(legend.title = element_blank())
 
-
 ```
+
+Se puede observar que en líneas generales el volumen comercial sufrió una caída fuerte en el año 2009 pero, a 2016, los países del G20 tienen el mismo volumen (sino más) que en 2006.
+
 
 ####4.3.2.- ¿Cuál será la previsión de exportación de la categoría más exportada por España?
 
@@ -426,20 +411,31 @@ print(exportaciones_ES[which.max(exportaciones_ES$suma),])
 
 Se obtiene que la categoría con más volumen de exportaciones es *88_aircraft_spacecraft_and_parts_thereof*. Se van a generar varios modelos de regresión lineal a fin de compararlos y realizar una predicción con el mejor de ellos.
 
+Para que los modelos sean lo más precisos posible, los datos con los que se van a entrenar van a estar limitados a la categoría obtenida y a España.
 
 ```{r, include=TRUE, echo=TRUE}
 
-modelo1 <- lm(trade_usd ~ country_or_area + year, 
-              data = G_20_data[G_20_data$flow == "Export",])
+modelo1 <- lm(trade_usd ~ year + comm_code, 
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
 
-modelo2 <- lm(trade_usd ~ country_or_area + year + category, 
-              data = G_20_data[G_20_data$flow == "Export",])
+modelo2 <- lm(trade_usd ~ year + weight_kg + comm_code,
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
 
-modelo3 <- lm(trade_usd ~ country_or_area + year + weight_kg + category,
-              data = G_20_data[G_20_data$flow == "Export",])
+modelo3 <- lm(trade_usd ~ year + flow + weight_kg + comm_code,
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
 
 ```
 
+Tras generar los modelos se comparan gracias a su coeficiente de determinación $R^2$. Cuánto más alto sea su valor mejor explicará ese modelo la variabilidad en el precio de la transacción.
 
 ```{r, include=TRUE, echo=TRUE}
 
@@ -454,6 +450,17 @@ coeficientes
 
 ```
 
+Se observa que el mejor modelo es el que predice el precio gracias al año, el tipo de flujo, el peso y el código de la materia. Con un valor de 0.7864493 tenemos que el modelo puede explicar casi el 79% de la variabilidad del precio. Aunque es una cifra mejorable es lo suficientemente alta como para poder hacer estimaciones.
+
+Ahora se pueden predecir exportaciones futuras para España en materias que sean de la categoría estudiada. Por ejemplo, se predice por cúanto se podrá exportar 25.000 Kg de partes de aviones (código de material 880330) en 2020.
+
+```{r}
+
+datos_pred <- data.frame(year=2020, flow = "Export", weight_kg = 25000, comm_code = "880330")
+
+cat("Precio de exportación previsto:", predict.lm(modelo3, datos_pred))
+
+```
 
 
 ####4.3.3.- ¿Las exportaciones de vegetales italianas son más abundantes que las españolas?
@@ -475,20 +482,23 @@ Se obtienen los grupos sobre los que realizar el contraste, se toma como vegetal
 
 ```{r, include=TRUE, results='hold'}
 
+#Datos de Italia
 veg_IT <- G_20_data[G_20_data$country_or_area == "Italy" & 
                     G_20_data$flow == "Export" &
                     G_20_data$category == 
                     "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
 
+#Datos de España
 veg_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
                     G_20_data$flow == "Export" &
                     G_20_data$category == 
                     "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
 
+#Contraste de hipótesis
 t.test(veg_IT, veg_ES, alternative = "greater")
 ```
 
-Se obtiene un p-valor de 0.0000001993, muy inferior al nivel de significación $\alpha$ fijado con lo que se rechaza la hipótesis nula y se concluye que las exportaciones italianas en la categoría *19_cereal_flour_starch_milk_preparations_and_products* son más abundates que las españolas en esa misma categoría.
+Se obtiene un p-valor de 1.993e-07, muy inferior al nivel de significación $\alpha$ fijado con lo que se rechaza la hipótesis nula y se concluye que las exportaciones italianas en la categoría *19_cereal_flour_starch_milk_preparations_and_products* son más abundates que las españolas en esa misma categoría.
 
 - - -
 
