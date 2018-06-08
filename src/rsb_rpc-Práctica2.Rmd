@@ -295,10 +295,22 @@ exportaciones_ES <- G_20_data[G_20_data$country_or_area == "Spain" &
 #### 4.1.3.- ¿Las exportaciones de vegetales italianas son más abundantes que las españolas?
 
     
-  * Para resolver la tercera cuestión, utilizaremos las siguientes columnas del conjunto de datos: **'country_or_area'**, **'year'**, **'flow'** y **'trade_usd'**.
+Para resolver la tercera cuestión, utilizaremos los siguientes conjuntos de datos:
 
 ```{r, include=TRUE, results='hold'}
-G_20_data.III <- G_20_data[c("country_or_area","year","flow","trade_usd")]
+
+#Datos de Italia
+veg_IT <- G_20_data[G_20_data$country_or_area == "Italy" & 
+                    G_20_data$flow == "Export" &
+                    G_20_data$category == 
+                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
+
+#Datos de España
+veg_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
+                    G_20_data$flow == "Export" &
+                    G_20_data$category == 
+                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
+
 ```
 
 ###4.2.- Comprobación de la normalidad y homogeneidad de la varianza
@@ -410,12 +422,6 @@ Lo primero que es necesario obtener es la categoría más exportada por España.
 
 ```{r, include=TRUE, echo=TRUE}
 
-#Sumatorio de exportaciones españolas por categoría
-exportaciones_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
-                              G_20_data$flow == "Export",] %>% 
-                    group_by(category) %>%
-                    summarise(suma = sum(trade_usd))
-
 #Máxima categoría
 print(exportaciones_ES[which.max(exportaciones_ES$suma),])
 
@@ -494,20 +500,9 @@ Se obtienen los grupos sobre los que realizar el contraste, se toma como vegetal
 
 ```{r, include=TRUE, results='hold'}
 
-#Datos de Italia
-veg_IT <- G_20_data[G_20_data$country_or_area == "Italy" & 
-                    G_20_data$flow == "Export" &
-                    G_20_data$category == 
-                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
-
-#Datos de España
-veg_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
-                    G_20_data$flow == "Export" &
-                    G_20_data$category == 
-                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
-
 #Contraste de hipótesis
 t.test(veg_IT, veg_ES, alternative = "greater")
+
 ```
 
 Se obtiene un p-valor de 1.993e-07, muy inferior al nivel de significación $\alpha$ fijado con lo que se rechaza la hipótesis nula y se concluye que las exportaciones italianas en la categoría *19_cereal_flour_starch_milk_preparations_and_products* son más abundates que las españolas en esa misma categoría.
