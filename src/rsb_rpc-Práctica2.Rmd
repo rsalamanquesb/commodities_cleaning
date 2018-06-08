@@ -57,7 +57,7 @@ A partir de estos datos se pueden llevar a cabo estudios sobre los flujos de exp
 
   * ¿Cuál será la previsión de exportación de la categoría más exportada por España?
 
-  * ¿El mercado chino ha resistido mejor la crisis en comparación con el estadounidense?
+  * ¿Las exportaciones de vegetales italianas son más abundantes que las españolas?
 
 Las columnas del dataset son las siguientes:
 
@@ -83,9 +83,9 @@ Como el archivo original es muy grande, se ha preparado una versión que contien
 # lectura del fichero con datos a partir de 2006
 #cmm_trade_data = read.csv("C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
-# cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+cmm_trade_data = read.csv("C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
-cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
+#cmm_trade_data = read.csv("C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv", head=TRUE, sep = ",")
 
 ```
 
@@ -97,6 +97,7 @@ Con esto se obtiene un conjunto de datos con las características explicadas ant
   * **comm_code:** Para corregir datos ausentes en otros campos.
   * **flow:** Para estudiar solo ciertos flujos.
   * **trade_usd:** Para analizar los volúmenes de las transacciones.
+  * **weight_kg:** Para incluir en modelos de regresión.
   * **category:** Para agrupar por categorías.
   
 Además, se va a trabajar únicamente con los países del G-20 (incluyendo a España en lugar de la UE en el último puesto).
@@ -110,6 +111,7 @@ G_20_data <- as.data.frame(cmm_trade_data[grep("Argentina|Australia|Brazil|Canad
                       "comm_code",
                       "flow",
                       "trade_usd",
+                      "weight_kg",
                       "category")])
 ```
 
@@ -121,6 +123,8 @@ Obtenemos un resumen de los datos para llevar a cabo un análisis previo:
 ```{r, include=TRUE, echo=TRUE, results='hold'}
 #resumen de los datos
 summary(G_20_data)
+
+str(G_20_data)
 ```
 
 ###3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
@@ -132,6 +136,7 @@ Según hemos definido anteriormente, las columnas con las que vamos a trabajar s
   * **comm_code:** Para corregir datos ausentes en otros campos.
   * **flow:** Para estudiar solo ciertos flujos.
   * **trade_usd:** Para analizar los volúmenes de las transacciones.
+  * **weight_kg:** Para incluir en modelos de regresión.
   * **category:** Para agrupar por categorías.
 
 Por tanto, analizaremos la existencia de ceros o elementos vacíos en estas columnas.
@@ -140,7 +145,7 @@ Comenzaremos el análisis detallado por las variables más sencillas:
 
  + En primer lugar **year**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna year
 aux = G_20_data[c("year")]
 aux = aux[!duplicated(aux$year), ]
@@ -160,7 +165,7 @@ print(sort(aux,decreasing=FALSE))
 
 + A continuación, **flow**, en este caso ya hemos visto en el resumen que todos los valores son de los cuatro tipos esperados:
 
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna flow
 aux = G_20_data[c("flow")]
 aux = aux[!duplicated(aux$flow), ]
@@ -181,7 +186,7 @@ print(sort(aux,decreasing=FALSE))
 
  + La siguiente variable a analizar es **country_or_area**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna country_or_area
 aux = G_20_data[c("country_or_area")]
 aux = aux[!duplicated(aux$country_or_area), ]
@@ -201,7 +206,7 @@ print(sort(aux,decreasing=FALSE))
 
  + La siguiente variable a analizar es **comm_code**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna comm_code
 aux = G_20_data[c("comm_code")]
 aux = aux[!duplicated(aux$comm_code), ]
@@ -228,7 +233,7 @@ summary(G_20_data$comm_code)
 
  + La siguiente variable a analizar es **trade_usd**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna trade_usd
 aux = G_20_data[c("trade_usd")]
 aux = aux[!duplicated(aux$trade_usd), ]
@@ -248,7 +253,7 @@ summary(G_20_data$trade_usd)
 
  + La siguiente variable a analizar es **category**:
  
-```{r, include=TRUE, echo=FALSE, results='hold'}
+```{r, include=TRUE, echo=TRUE, results='hold'}
 ## Analizamos la columna category
 aux = G_20_data[c("category")]
 aux = aux[!duplicated(aux$category), ]
@@ -321,9 +326,179 @@ plot(G_20_data$trade_usd,
 
 ###4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).
 
+
+Para la resolución de la primera pregunta planteada será necesario obtener un conjunto de datos que agrupe por país y por año el volumen de transacciones totales. Para ello se hará uso de la bilbioteca *dplyr* de R.
+
+```{r, include=TRUE, echo=TRUE, warning=FALSE}
+
+library(dplyr, warn.conflicts=FALSE) #Para manipular los datos
+
+```
+
+Ahora se puede generar el conjunto de datos, se cambian las unidades del sumatorio a miles de millones de dólares para reducir la cifra resultante.
+
+```{r, include=TRUE, results='hold', fig.width=8,fig.height=10}
+
+#Sumatorio por país y año
+country_year_data <- G_20_data %>% 
+                    group_by(year,country_or_area) %>%
+                    summarise(suma = sum(trade_usd))
+
+#Se cambia la unidad del sumatorio, de dólares a miles de millones de dólares
+country_year_data$suma <- country_year_data$suma/1000000000
+
+```
+
 ###4.2.- Comprobación de la normalidad y homogeneidad de la varianza.
 
+
+
+
 ###4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.
+
+####4.3.1.- ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
+
+Para responder a esta pregunta tan solo será necesario realizar un gráfico con la evolución por años de las cifras de importaciones o exportaciones de cada país.
+
+Para ello es necesario cargar la siguiente biblioteca de R:
+
+```{r, include=TRUE, results='hold', warning=FALSE}
+
+library(ggplot2) #Para crear el gráfico
+
+```
+
+Haciendo uso del conjunto de datos **country_year_data** obtenido en el punto 4.1, se pinta el gráfico deseado.
+
+```{r, include=TRUE, results='hold', fig.width=8,fig.height=10}
+
+#Gráfico
+ggplot(country_year_data, aes(x=year, y=suma, shape=country_or_area, color=country_or_area)) +
+  scale_shape_manual(values=seq(0,21))+ #Símbolos para cada país
+  geom_line()+ #Se pinta la línea entre los puntos
+  geom_point()+ #Se pintan los puntos
+  labs(title="Evolución anual de transacciones del G20",
+       x="Año",
+       y="Miles de Millones de Dólares")+
+  theme(legend.position="top")+ 
+  theme(legend.text = element_text(size=8))+
+  theme(legend.title = element_blank())
+
+```
+
+Se puede observar que en líneas generales el volumen comercial sufrió una caída fuerte en el año 2009 pero, a 2016, los países del G20 tienen el mismo volumen (sino más) que en 2006.
+
+
+####4.3.2.- ¿Cuál será la previsión de exportación de la categoría más exportada por España?
+
+Para responder a esta pregunta se creará un modelo de regresión lineal capaz de hacer predicciones sobre las exportaciones de España.
+
+Lo primero que es necesario obtener es la categoría más exportada por España. Se va a considerar esa categoría como aquella que haya movido más volumen monetario dentro del periodo estudiado.
+
+
+```{r, include=TRUE, echo=TRUE}
+
+#Sumatorio de exportaciones españolas por categoría
+exportaciones_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
+                              G_20_data$flow == "Export",] %>% 
+                    group_by(category) %>%
+                    summarise(suma = sum(trade_usd))
+
+#Máxima categoría
+print(exportaciones_ES[which.max(exportaciones_ES$suma),])
+
+```
+
+Se obtiene que la categoría con más volumen de exportaciones es *88_aircraft_spacecraft_and_parts_thereof*. Se van a generar varios modelos de regresión lineal a fin de compararlos y realizar una predicción con el mejor de ellos.
+
+Para que los modelos sean lo más precisos posible, los datos con los que se van a entrenar van a estar limitados a la categoría obtenida y a España.
+
+```{r, include=TRUE, echo=TRUE}
+
+modelo1 <- lm(trade_usd ~ year + comm_code, 
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
+
+modelo2 <- lm(trade_usd ~ year + weight_kg + comm_code,
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
+
+modelo3 <- lm(trade_usd ~ year + flow + weight_kg + comm_code,
+              data = 
+                  G_20_data[G_20_data$category == "88_aircraft_spacecraft_and_parts_thereof" &
+                            G_20_data$country_or_area == "Spain"
+                            ,])
+
+```
+
+Tras generar los modelos se comparan gracias a su coeficiente de determinación $R^2$. Cuánto más alto sea su valor mejor explicará ese modelo la variabilidad en el precio de la transacción.
+
+```{r, include=TRUE, echo=TRUE}
+
+coeficientes <- matrix(c(1, summary(modelo1)$r.squared,
+                         2, summary(modelo2)$r.squared,
+                         3, summary(modelo3)$r.squared),
+                       ncol = 2, byrow = TRUE)
+
+colnames(coeficientes) <- c("Modelo", "R^2")
+
+coeficientes
+
+```
+
+Se observa que el mejor modelo es el que predice el precio gracias al año, el tipo de flujo, el peso y el código de la materia. Con un valor de 0.7864493 tenemos que el modelo puede explicar casi el 79% de la variabilidad del precio. Aunque es una cifra mejorable es lo suficientemente alta como para poder hacer estimaciones.
+
+Ahora se pueden predecir exportaciones futuras para España en materias que sean de la categoría estudiada. Por ejemplo, se predice por cúanto se podrá exportar 25.000 Kg de partes de aviones (código de material 880330) en 2020.
+
+```{r}
+
+datos_pred <- data.frame(year=2020, flow = "Export", weight_kg = 25000, comm_code = "880330")
+
+cat("Precio de exportación previsto:", predict.lm(modelo3, datos_pred))
+
+```
+
+
+####4.3.3.- ¿Las exportaciones de vegetales italianas son más abundantes que las españolas?
+
+Para responder a esta pregunta se va a realizar un contraste de hipótesis de dos muestras sobre la diferencia de medias, las exportaciones de vegetales de italia y las de españa.
+
+Este tipo de contrastes requiere que los datos empleados sigan una distribución normal, en principio nuestro conjunto de datos no cumple con esta característica pero, el contraste que vamos a realizar es un contraste sobre la diferencia de medias y, según el teorema del límite central, las medias de un conjunto de datos pueden aproximarse a la normal si la muestra es suficientemente grande (más de 30). En nuestro caso esto se cumple con creces con lo que se puede aplicar el contraste sin problemas. 
+
+La hipótesis es la siguiente:
+
+  * Hipótesis nula H~0~: $\mu_1 - \mu_2 = 0$
+
+  * Hipótesis alternativa H~1~: $\mu_1 - \mu_2 > 0$
+
+Siendo $\mu_1$ la media de las exportaciones de vegetales italianas y $\mu_2$ la media de las españolas En este caso se tiene una hipótesis unilateral. Se tomará un nivel de significación $\alpha$ = 0.05.
+
+
+Se obtienen los grupos sobre los que realizar el contraste, se toma como vegetales la categoría *19_cereal_flour_starch_milk_preparations_and_products*.
+
+```{r, include=TRUE, results='hold'}
+
+#Datos de Italia
+veg_IT <- G_20_data[G_20_data$country_or_area == "Italy" & 
+                    G_20_data$flow == "Export" &
+                    G_20_data$category == 
+                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
+
+#Datos de España
+veg_ES <- G_20_data[G_20_data$country_or_area == "Spain" & 
+                    G_20_data$flow == "Export" &
+                    G_20_data$category == 
+                    "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
+
+#Contraste de hipótesis
+t.test(veg_IT, veg_ES, alternative = "greater")
+```
+
+Se obtiene un p-valor de 1.993e-07, muy inferior al nivel de significación $\alpha$ fijado con lo que se rechaza la hipótesis nula y se concluye que las exportaciones italianas en la categoría *19_cereal_flour_starch_milk_preparations_and_products* son más abundates que las españolas en esa misma categoría.
 
 - - -
 
