@@ -538,17 +538,24 @@ plot(G_20_data$trade_usd,
 <ol style="list-style-type: decimal">
 <li><p>¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?</p>
 <ul>
-<li>Para dar respuesta a esta primera pregunta utilizaremos la variable <strong>‘trade_usd’</strong>.</li>
+<li>Para dar respuesta a esta primera pregunta utilizaremos la variable <strong>‘country_or_area’</strong>, <strong>‘year’</strong>, <strong>‘trade_usd’</strong>, .</li>
 </ul></li>
+</ol>
+<pre class="r"><code>G_20_data.I &lt;- G_20_data[c(&quot;country_or_area&quot;,&quot;year&quot;,&quot;trade_usd&quot;)]</code></pre>
+<ol start="2" style="list-style-type: decimal">
 <li><p>¿Cuál será la previsión de exportación de la categoría más exportada por España?</p>
 <ul>
 <li>En cuanto a la segunda pregunta planteada, para resolverla, necesitaremos las columnas: <strong>‘country_or_area’</strong>, <strong>‘year’</strong>, <strong>‘flow’</strong>, <strong>‘trade_usd’</strong> y <strong>‘category’</strong>.</li>
 </ul></li>
+</ol>
+<pre class="r"><code>G_20_data.II &lt;- G_20_data[c(&quot;country_or_area&quot;,&quot;year&quot;,&quot;flow&quot;,&quot;trade_usd&quot;,&quot;category&quot;)]</code></pre>
+<ol start="3" style="list-style-type: decimal">
 <li><p>¿El mercado chino ha resistido mejor la crisis en comparación con el estadounidense?</p>
 <ul>
 <li>Para resolver la tercera cuestión, utilizaremos las siguientes columnas del conjunto de datos: <strong>‘country_or_area’</strong>, <strong>‘year’</strong>, <strong>‘flow’</strong> y <strong>‘trade_usd’</strong>.</li>
 </ul></li>
 </ol>
+<pre class="r"><code>G_20_data.III &lt;- G_20_data[c(&quot;country_or_area&quot;,&quot;year&quot;,&quot;flow&quot;,&quot;trade_usd&quot;)]</code></pre>
 </div>
 <div id="comprobacion-de-la-normalidad-y-homogeneidad-de-la-varianza" class="section level3">
 <h3>4.2.- Comprobación de la normalidad y homogeneidad de la varianza</h3>
