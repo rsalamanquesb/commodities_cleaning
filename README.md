@@ -25,4 +25,4 @@ Práctica desarrollada para la asignatura _Tipología y ciclo de vida de los dat
  ggplot2
  ``` 
  
- La ejecución y generación del fichero _html_ se realizar desde RStudio.
+ La ejecución y generación del fichero _html_ se realizará desde RStudio.
