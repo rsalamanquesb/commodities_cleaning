@@ -1,6 +1,3 @@
-# commodities_cleaning
-Repositorio para prácticas de data cleaning [UOC] 
-
 # Práctica 2: Limpieza y validación de datos
 
 ## Descripción
