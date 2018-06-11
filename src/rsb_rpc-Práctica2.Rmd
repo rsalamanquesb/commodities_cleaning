@@ -84,11 +84,11 @@ vpath_rsb1 = "C:/Users/Ruben/Google Drive/UOC/2_Tipología y Ciclo de Vida de lo
 
 vpath_rsb2 = "C:/Users/Rsb/Google Drive/UOC/2_Tipología y Ciclo de Vida de los Datos/Prácticas/Práctica2/commodity_trade_statistics_data_2006.csv"
 
-vpath_rpc1 = "C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv"
+vpath_rpc1 = "C:/Users/Ricky/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv"
 
 vpath_rpc2 = "C:/Users/rpc/Documents/Google Drive/Máster Data Science/2017-2018 2ndo semestre/Tipología y ciclo de vida de los datos/Práctica 2 - Limpieza y validación de datos/commodity_trade_statistics_data_2006.csv"
 
-vpath = vpath_rpc2
+vpath = vpath_rpc1
 ```
 
 ```{r, results='hold'}
@@ -138,7 +138,12 @@ Obtenemos un resumen de los datos para llevar a cabo un análisis previo:
 #resumen de los datos
 summary(G_20_data)
 
-str(G_20_data)
+# str(G_20_data)
+
+# tipos de las variables:
+cat("\n")
+cat("Tipo de dato de cada variable:\n")
+sapply(G_20_data, function(x) class(x))
 ```
 
 ###3.1.- ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
@@ -164,9 +169,13 @@ sapply(G_20_data, function(x) sum(is.na(x) | x==0))
 
 Vemos que la única columna que contiene ceros y/o 'NA' es "weight_kg", por tanto, tenemos dos opciones, la primera sería eliminar estos registros, la segunda sería tratar esta columna para asignar un valor válido para nuestros análisis, escogeremos esta segunda opción dado que la primera nos llevaría a rechazar registros válidos para el proyecto.
 
-Para llevar a cabo esta asignación valores, calcularemos el precio medio por kg de cada "comm_code", y, dado que no tenemos valores perdidos para la columna "trade_usd", calcularemos el volúmen en kg de la transacción.
+Para llevar a cabo esta asignación valores, realizaremos una imputación de valores por media simple:
 
 ```{r, include=TRUE, echo=TRUE, results='hold', message=FALSE}
+
+G_20_data = transform(G_20_data, weight_kg = ifelse((is.na(weight_kg)|weight_kg==0), mean(weight_kg, na.rm=TRUE), weight_kg))
+
+sapply(G_20_data, function(x) sum(is.na(x) | x==0))
 
 ```
 
@@ -194,14 +203,9 @@ summary(G_20_data$category)
 
 Vemos que para el caso de la variable "category", existe un valor especial, se trata de "all_commodities", este valor se corresponde con observaciones en las que "comm_code=TOTAL", por tanto, trataremos estos casos de forma especial.
 
-```{r, include=FALSE, echo=FALSE, results='hold'}
-## Borramos las variables auxiliares utilizadas
-rm(aux, aux_n0)
-```
-
 ###3.2.- Identificación y tratamiento de valores extremos
 
-Dentro del conjunto de datos que se está utilizando, el único dato sobre el que tiene sentido realizar un estudio sobre valores extremos es *trade_usd*.
+Dentro del conjunto de datos que se está utilizando, los únicos datos sobre los que tiene sentido realizar un estudio sobre valores extremos son: *trade_usd* y *weight_kg*.
 
 Como se acaba de ver en el punto anterior, el conjunto de datos cuenta con filas sumatorio (comm_code= TOTAL o 999999). Estas filas no son válidas para realizar los análisis propuestos con lo que se procede a limpiar el conjunto de datos eliminándolas.
 
@@ -212,7 +216,7 @@ G_20_data <- G_20_data[G_20_data$comm_code != "999999" &
 
 ```
 
-Una manera de visualizar los valores extremos es mediante un diagrama de caja o *boxplot*. Con el siguiente código se obtiene este diagrama.
+En primer lugar, analizaremos los valores extremos para la variable *trade_usd*. Una manera de visualizar los valores extremos es mediante un diagrama de caja o *boxplot*. Con el siguiente código se obtiene este diagrama.
 
 ```{r, include=TRUE, results='hold'}
 
@@ -232,7 +236,7 @@ Se puede observar que el gráfico obtenido no es legible. Esto se debe a que el 
 
 En realidad, cualquiera de estos valores es un valor válido con lo que no se considera ningún registro como valor extremo.
 
-Por último se muestra la distribución de valores de *trade_usd* para apreciar la cantidad de datos que exiten a lo largo de todo el rango de la variable.
+Por último se muestra la distribución de valores de *trade_usd* para apreciar la cantidad de datos que existen a lo largo de todo el rango de la variable.
 
 ```{r, include=TRUE, results='hold'}
 
@@ -245,6 +249,39 @@ plot(G_20_data$trade_usd,
 
 ```
 
+
+A continuación, analizaremos la variable *weight_kg*. El primer paso será mostrar el diagrama de cajas:
+
+```{r, include=TRUE, results='hold'}
+
+par(mar=c(7,4,7,4)) #Márgenes del gráfico
+
+boxplot(G_20_data$weight_kg, 
+       main="Dispersión de weight_kg",
+       xlab="Kg",
+       col="skyblue", #color de relleno
+       boxcol="skyblue", #color de la caja
+       outcol="salmon", #color de los valores extremos
+       horizontal=TRUE)
+
+```
+
+En este caso obtenemos un gráfico similar al anterior, vemos que la variable *weight_kg* tiene un rango de valores muy grande. En este caso tomaremos también como válidos todos los valores. 
+
+Se muestra a continuación la distribución de valores de *weight_kg*:
+
+
+```{r, include=TRUE, results='hold'}
+
+plot(G_20_data$weight_kg, 
+     xlab="Valores de weight_kg",
+     ylab="Fila",
+     col="skyblue"
+     )
+
+```
+
+
 - - -
 
 ##4.- Análisis de los datos
@@ -253,7 +290,7 @@ En este punto se llevará a cabo un segundo análisis de los datos para conocerl
 
 ###4.1.- Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar)
 
-En el punto 2, tras un análisis preliminar, hemos definido el conjunto de datos de trabajo mediante una preselección del conjunto original, seleccionando únicamente las variables del conjunto original que hemos estimado que iban a ser necesarias. A partir de dicho conjunto de datos, "G_20_data", vamos a analizar qué variables serán necesarias para dar respuesta a cada una de las preguntas planteadas y, a partir de ello, definiremos un dataset para dar respuesta a cada una de las preguntas planteadas:
+En el punto 2, tras un análisis preliminar, hemos definido el conjunto de datos de trabajo mediante una preselección del conjunto original, seleccionando únicamente las variables del conjunto original que hemos estimado que iban a ser necesarias. A partir de dicho conjunto de datos, "G_20_data", vamos a analizar qué variables serán necesarias para dar respuesta a cada una de las preguntas planteadas y, a partir de ello, definiremos un dataset para dar respuesta a cada una de dichas preguntas:
 
 #### 4.1.1.- ¿Se ha reducido el volumen comercial (en $) en este periodo para los países del G20?
 
@@ -309,8 +346,8 @@ veg_ES <- G_20_data[G_20_data$country_or_area == "Spain" &
                     G_20_data$flow == "Export" &
                     G_20_data$category == 
                     "19_cereal_flour_starch_milk_preparations_and_products",]$trade_usd
+```
 
-``` 
 
 ###4.2.- Comprobación de la normalidad y homogeneidad de la varianza
 
@@ -341,7 +378,7 @@ for (i in 1:ncol(G_20_data)) {
     if (is.integer(G_20_data[,i]) | is.numeric(G_20_data[,i])){
       
       # llevamos a cabo el test de Anderson-Darling
-      p_val = ad.test(G_20_data[,i])$p.value
+      p_valor = ad.test(G_20_data[,i])$p.value
       
       if (p_valor > alpha){
         cat("La variable", colnames(G_20_data)[i], "sí sigue una distribución normal")
@@ -376,6 +413,10 @@ if (p_valor > alpha){
 
 ```
 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+#borrado de variables
+rm(alpha, i, flt, p_valor)
+```
 
 ###4.3.- Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.
 
@@ -426,7 +467,7 @@ Con el conjunto de datos obtenido en el punto 4.1.2 se muestra qué categoría e
 #Máxima categoría
 print(exportaciones_ES[which.max(exportaciones_ES$suma),])
 
-```
+``` 
 
 Se obtiene que la categoría con más volumen de exportaciones es *88_aircraft_spacecraft_and_parts_thereof*. Se van a generar varios modelos de regresión lineal a fin de compararlos y realizar una predicción con el mejor de ellos.
 
@@ -469,7 +510,7 @@ coeficientes
 
 ```
 
-Se observa que el mejor modelo es el que predice el precio gracias al año, el tipo de flujo, el peso y el código de la materia. Con un valor de 0.7864493 tenemos que el modelo puede explicar casi el 79% de la variabilidad del precio. Aunque es una cifra mejorable es lo suficientemente alta como para poder hacer estimaciones.
+Se observa que el mejor modelo es el que predice el precio gracias al año, el tipo de flujo, el peso y el código de la materia. Con un valor de 0.7864493 tenemos que el modelo puede explicar casi el 79% de la variabilidad del precio. Aunque es una cifra mejorable, es lo suficientemente alta como para poder hacer estimaciones.
 
 Ahora se pueden predecir exportaciones futuras para España en materias que sean de la categoría estudiada. Por ejemplo, se predice por cúanto se podrá exportar 25.000 Kg de partes de aviones (código de material 880330) en 2020.
 
@@ -480,7 +521,6 @@ datos_pred <- data.frame(year=2020, flow = "Export", weight_kg = 25000, comm_cod
 cat("Precio de exportación previsto:", predict.lm(modelo3, datos_pred))
 
 ```
-
 
 ####4.3.3.- ¿Las exportaciones de vegetales italianas son más abundantes que las españolas?
 
@@ -507,17 +547,28 @@ t.test(veg_IT, veg_ES, alternative = "greater")
 
 Se obtiene un p-valor de 1.993e-07, muy inferior al nivel de significación $\alpha$ fijado con lo que se rechaza la hipótesis nula y se concluye que las exportaciones italianas en la categoría *19_cereal_flour_starch_milk_preparations_and_products* son más abundates que las españolas en esa misma categoría.
 
+```{r, include=TRUE, echo=FALSE, results='hold'}
+#borrado de variables
+rm(modelo1, modelo2, modelo3, datos_pred, coeficientes, veg_ES, veg_IT)
+```
+
 - - -
 
 ##5.- Representación de los resultados a partir de tablas y gráficas
+
+En los puntos dónde eran necesarios, se muestran gráficas y tablas que ayudan a interpretar los resultados o apoyan las explicaciones.
 
 - - -
 
 ##6.- Resolución del problema. A partir de los resultados obtenidos, ¿cuáles son las conclusiones? ¿Los resultados permiten responder al problema?
 
+En el punto 4.3 se han aplicado las pruebas necesarias para dar respuesta a cada una de la preguntas planteadas, utilizando diferentes métodos para cada una de ellas: análisis gráfico, regresión lineal y contraste de hipótesis. Cada una de las preguntas ha obtenido una respuesta adecuada, por lo que se puede decir que el análisis ha concluido de forma satisfactoria.
+
 - - -
 
 ##7.- Código: Hay que adjuntar el código, preferiblemente en R, con el que se ha realizado la limpieza, análisis y representación de los datos. Si lo preferís, también podéis trabajar en Python.
+
+El propio documento incluye el código que se ha utilizado para la realización del trabajo.
 
 - - -
 
